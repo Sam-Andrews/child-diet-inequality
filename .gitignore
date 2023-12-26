@@ -1,4 +1,5 @@
 # Hide output files until they are ready
-
 raw/merged.csv
+clean/clean_data.csv
 
+.Rproj.user
