@@ -231,3 +231,34 @@ df <- extreme_sugar(df, "FFQ0112", "FFQ0120", "sugar")
 ## Output file to `clean` directory
 
 write.csv(df, file = here::here("../clean", "clean_data.csv"))
+
+
+# ----------------------------------------------------------------------------
+
+## Produce dedicated data frame for Shiny app
+
+
+# Set 'natural language' names for variables
+
+shiny_df <- df %>%
+  dplyr::mutate(`gender` = RIAGENDR,
+                `age` = RIDAGEYR,
+                `ethnicity` = RIDRETH1,
+                `the fruit index` = fruit_index,
+                `the vegetable index` = veg_index,
+                `the sugar index` = sugar_index,
+                `low fruit consumption` = fruit_4,
+                `low vegetable consumption` = veg_4,
+                `high sugar consumption` = sugar_9)
+
+
+# Select only needed variables
+
+new_shiny <- shiny_df[, 67:75]
+
+saveRDS(new_shiny, file = here::here("../clean", "data.rds"))
+
+print("Data wrangling script fully executed.")
+
+# ----------------------------------------------------------------------------
+#                               END OF SCRIPT
