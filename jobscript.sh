@@ -29,7 +29,7 @@ Rscript visualisations.R
 
 # Delete old data
 
-rm ../clean/data.rds
+#rm ../clean/data.rds
 rm ../raw/merged.csv
 
 
