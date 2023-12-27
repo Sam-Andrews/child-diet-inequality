@@ -13,24 +13,28 @@ bash preprocess.sh
 
 # Run data wrangling script
 
-#echo "RUNNING DATA WRANGLING SCRIPT..."
+echo "RUNNING DATA WRANGLING SCRIPT..."
 
-#cd rscripts
-
-#Rscript wrangling.R
+Rscript data_wrangling.R
 
 # Run data visualisation script
 
-#echo "RUNNING DATA VISUALISATION SCRIPT..."
+echo "RUNNING DATA VISUALISATION SCRIPT..."
 
-#Rscript static_vis.R
+Rscript visualisations.R
+
+# Run "youngbites" Shiny app script
+
+#Rscript youngbites/app.R
 
 # Delete old data
 
-#rm ../../raw/merged.csv
+rm ../clean/data.rds
+rm ../raw/merged.csv
+
 
 # All scripts run
 
-#echo "All scripts run!"
-#echo "Please check the 'clean' directory for the cleaned and merged dataset."
-#echo "Please check the 'visualisations' directory for the visualisations and Shiny app."
+echo "All scripts run!"
+echo "Please check the 'clean' directory for the cleaned and merged dataset."
+echo "Please check the 'visualisations' directory for the visualisations."
