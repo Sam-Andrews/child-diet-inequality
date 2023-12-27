@@ -5,6 +5,8 @@
 
 ## Run libraries
 
+renv::restore() # ...restore renv packages
+
 library(here) # ...for relative path file management
 library(dplyr) # ...for data wrangling
 library(ggplot2) # ...for data visualisation
@@ -57,7 +59,7 @@ index_vis <- ggplot(clean_df) +
 ## Save visualisation to 'visualisations' directory
 
 ggsave("index_vis.png", plot = last_plot(), 
-       path = here::here("../../visualisations"),
+       path = here::here("../visualisations"),
        width = 5, height = 3,
        dpi = 800)
 
@@ -197,7 +199,7 @@ extreme_vis <- ggplot(clean_df_long, aes(x = freq_label, y = Yes_proportion,
 ## Save visualisation to visualisations directory
 
 ggsave("extreme_consumption.png", plot = last_plot(), 
-       path = here::here("../../visualisations"),
+       path = here::here("../visualisations"),
        width = 7, height = 5,
        dpi = 800)
 
