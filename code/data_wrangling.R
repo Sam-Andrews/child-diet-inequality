@@ -263,7 +263,7 @@ shiny_df <- df %>%
                 `high sugar consumption` = sugar_9)
 
 
-# Select only needed variables
+# Select only required variables
 
 new_shiny <- shiny_df[, 69:79]
 
