@@ -1,5 +1,15 @@
 #!/usr/bin/env bash
 
+# Parse command line options
+
+while getopts "m:M:" opt; do
+    case "$opt" in
+    a) min_age=$OPTARG ;;
+    A) max_age=$OPTARG ;;
+    *) ;;
+    esac
+done
+
 # Set directory to where raw data is stored
 cd ../raw
 
@@ -33,11 +43,19 @@ join_files() {
 }
 
 # Function to filter by age
+# ...set default values if not specified
+
+min_age=0
+max_age=12
+
 filter_by_age() {
     local input_file=$1
     local output_file=$2
-    echo "Filtering for respondents aged 12 and younger..."
-    awk -F',' '($4 <= 12)' $input_file > $output_file
+    local min=$min_age
+    local max=$max_age
+    echo "Filtering for respondents between $min and $max years..."
+    # ...below assumes age is the 4th column
+    awk -F',' -v min="$min" -v max="$max" '($4 >= min && $4 <= max)' $input_file > $output_file
     echo "...Complete."
 }
 
@@ -69,7 +87,7 @@ recode_missing_values() {
     echo "...Complete."
 }
 
-# Main script
+## Main script
 
 # Filter columns
 filter_columns DEMO_D.csv DEMO_D_cut.csv "1,5-7,9,11,12,14,16,18,20"
