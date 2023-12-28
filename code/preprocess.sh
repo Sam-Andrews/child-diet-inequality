@@ -53,9 +53,15 @@ filter_by_age() {
     local output_file=$2
     local min=$min_age
     local max=$max_age
+
     echo "Filtering for respondents between $min and $max years..."
-    # ...below assumes age is the 4th column
-    awk -F',' -v min="$min" -v max="$max" '($4 >= min && $4 <= max)' $input_file > $output_file
+
+    # Extract and preserve the header
+    head -1 $input_file > $output_file
+
+    # Filter the data, skipping the header
+    awk -F',' -v min="$min" -v max="$max" 'NR>1 && ($4 >= min && $4 <= max)' $input_file >> $output_file
+
     echo "...Complete."
 }
 
