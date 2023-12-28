@@ -10,7 +10,7 @@ cd ../raw
 echo "Filtering out unneeded fields..."
 
 # Filter `DEMO_D.csv`
-cut -d',' -f1,5-7,9,11,14,18,20 DEMO_D.csv > DEMO_D_cut.csv
+cut -d',' -f1,5-7,9,11,12,14,16,18,20 DEMO_D.csv > DEMO_D_cut.csv
 
 # Filtering `FFQRAW_D.csv
 

@@ -30,7 +30,7 @@ Rscript visualisations.R
 # Delete old data
 
 #rm ../clean/data.rds
-rm ../raw/merged.csv
+#rm ../raw/merged.csv
 
 
 # All scripts run

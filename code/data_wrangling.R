@@ -10,9 +10,6 @@
 # and sugar at each response level
 
 
-
-
-
 # ----------------------------------------------------------------------------
 
 ## Run libraries
@@ -52,7 +49,7 @@ df <- df %>%
 df <- df %>%
   dplyr::mutate(RIDRETH1 = factor(case_when(
     RIDRETH1 == 1 ~ "Mexican American",
-    RIDRETH1 == 2 ~ "Other Hispanic",
+    RIDRETH1 == 2 ~ "Other",
     RIDRETH1 == 3 ~ "White American",
     RIDRETH1 == 4 ~ "Black American",
     RIDRETH1 == 5 ~ "Other"
@@ -63,36 +60,33 @@ df <- df %>%
 
 df <- df %>%
   dplyr::mutate(INDHHINC = factor(case_when(
-    INDHHINC == 1  ~ "$0 to $4,999",
-    INDHHINC == 2  ~ "$5,000 to $9,999",
-    INDHHINC == 3  ~ "$10,000 to $14,999",
-    INDHHINC == 4  ~ "$15,000 to $19,999",
-    INDHHINC == 5  ~ "$20,000 to $24,999",
-    INDHHINC == 6  ~ "$25,000 to $34,999",
-    INDHHINC == 7  ~ "$35,000 to $44,999",
-    INDHHINC == 8  ~ "$45,000 to $54,999",
-    INDHHINC == 9  ~ "$55,000 to $64,999",
-    INDHHINC == 10 ~ "$65,000 to $74,999",
-    INDHHINC == 11 ~ "$75,000 and Over",
-    INDHHINC == 12 ~ NA,
-    INDHHINC == 13 ~ NA
-  ), levels = c("$0 to $4,999", "$5,000 to $9,999", "$10,000 to $14,999", 
-                "$15,000 to $19,999", "$20,000 to $24,999", 
-                "$25,000 to $34,999", "$35,000 to $44,999", 
-                "$45,000 to $54,999", "$55,000 to $64,999", 
-                "$65,000 to $74,999", "$75,000 and Over")))
+    INDHHINC == 1  ~ "Under $15,000",
+    INDHHINC == 2  ~ "Under $15,000",
+    INDHHINC == 3  ~ "Under $15,000",
+    INDHHINC == 4  ~ "$15,000-$24,999",
+    INDHHINC == 5  ~ "$15,000-$24,999",
+    INDHHINC == 6  ~ "$25,000-$44,999",
+    INDHHINC == 7  ~ "$25,000-$44,999",
+    INDHHINC == 8  ~ "$45,000-$64,999",
+    INDHHINC == 9  ~ "$45,000-$64,999",
+    INDHHINC == 10 ~ "$65,000+",
+    INDHHINC == 11 ~ "$65,000+"
+  ), levels = c("Under $15,000", "$15,000-$24,999", "$25,000-$44,999",
+                "$45,000-$64,999", "$65,000+")))
+
+
 
 
 # Whether child is in education
 # Note that this has merged 'school' response options to create an 'in
-# education / out of education' signifier
+# education / out of education' binary classifier
 
-# df <- df %>%
-#   dplyr::mutate(DMDSCHOL = factor(case_when(
-#     DMDSCHOL == 1 ~ "In education",
-#     DMDSCHOL == 2 ~ "In education",
-#     DMDSCHOL == 3 ~ "Not in education"
-#   ), levels = c("In education", "Not in education")))
+ df <- df %>%
+   dplyr::mutate(DMDSCHOL = factor(case_when(
+     DMDSCHOL == 1 ~ "In education",
+     DMDSCHOL == 2 ~ "In education",
+     DMDSCHOL == 3 ~ "Not in education"
+   ), levels = c("In education", "Not in education")))
 
 
 # Age groups
@@ -105,15 +99,19 @@ df <- df %>%
   ), levels = c("4 and under", "5 to 8", "9 and above")))
 
 
-# CItizenship status
 
-# df <- df %>%
-#   dplyr::mutate(DMDCITZN = factor(case_when(
-#     DMDCITZN == 1 ~ "US Citizen",
-#     DMDCITZN == 2 ~ "Not US Citizen",
-#     DMDCITZN == 7 ~ NA
-#   ), levels = c("US Citizen", "Not US Citizen")))
+# Household size
 
+table(df$DMDHHSIZ)
+
+df <- df %>%
+  dplyr::mutate(DMDHHSIZ = factor(case_when(
+    DMDHHSIZ == 1 | DMDHHSIZ == 2 | DMDHHSIZ == 3 ~ "1 to 3 members",
+    DMDHHSIZ == 4 | DMDHHSIZ == 5 ~ "4 to 5 members",
+    DMDHHSIZ == 6 | DMDHHSIZ == 7 ~ "6+ members"),
+    levels = c("1 to 3 members",
+               "4 to 5 members",
+               "6+ members")))
 
 # ----------------------------------------------------------------------------
 ## Function to produce index for a range of columns
@@ -133,17 +131,28 @@ make_index <- function(data, start_col, end_col) {
   # Create a sequence of indices
   cols_seq <- seq(from = min(cols_indices), to = max(cols_indices))
   
-  # Calculate mean average for each column
-  rowSums(data[, cols_seq, drop = FALSE], na.rm = TRUE) / length(cols_seq)
+  # Calculate the sum of non-NA values for each row
+  sum_non_na <- rowSums(data[, cols_seq, drop = FALSE], na.rm = TRUE)
+  
+  # Count the number of non-NA values for each row
+  count_non_na <- apply(data[, cols_seq], 1, function(x) length(na.omit(x)))
+  
+  # Calculate the mean by dividing sum by count of non-NAs
+  sum_non_na / count_non_na
 }
 
-# ----------------------------------------------------------------------------
 
 ## Call function for each of our column ranges
 
 df$fruit_index <- make_index(df, "FFQ0016", "FFQ0027") # ...fruit index
 df$veg_index <- make_index(df, "FFQ0028", "FFQ0057") # ...veg index
 df$sugar_index <- make_index(df, "FFQ0112", "FFQ0120") # ...sugar index
+
+
+# Below converts any `NaN` to `NA`. This stage is required for the Shiny app.
+
+df[] <- lapply(df, function(x) { if(is.numeric(x)) { 
+  x[is.nan(x)] <- NA }; return(x) })
 
 
 # ----------------------------------------------------------------------------
@@ -238,12 +247,14 @@ write.csv(df, file = here::here("../clean", "clean_data.csv"))
 ## Produce dedicated data frame for Shiny app
 
 
-# Set 'natural language' names for variables
+# Set 'natural language' names for variables (backticks allow for space chars)
 
 shiny_df <- df %>%
   dplyr::mutate(`gender` = RIAGENDR,
                 `age` = RIDAGEYR,
                 `ethnicity` = RIDRETH1,
+                `annual household income` = INDHHINC,
+                `size of household` = DMDHHSIZ,
                 `the fruit index` = fruit_index,
                 `the vegetable index` = veg_index,
                 `the sugar index` = sugar_index,
@@ -254,7 +265,7 @@ shiny_df <- df %>%
 
 # Select only needed variables
 
-new_shiny <- shiny_df[, 67:75]
+new_shiny <- shiny_df[, 69:79]
 
 saveRDS(new_shiny, file = here::here("../clean", "data.rds"))
 
