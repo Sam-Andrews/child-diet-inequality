@@ -61,6 +61,7 @@ ui <- dashboardPage(
   
   
   ## Sidebar
+  ## ...these elements control the data subsetting
   dashboardSidebar(
     
     selectInput("outcomeVar", "I want to see how...", 
@@ -75,28 +76,29 @@ ui <- dashboardPage(
     
     selectInput("compareVar", "changes by...", 
                 choices = c(
-                  "gender" = "gender",
-                  "ethnicity" = "ethnicity",
-                  "age" = "age"
+                  "gender",
+                  "ethnicity",
+                  "age"
                 )),
     
     selectInput("dodgeVar", "and compares across...", 
                 choices = c(
-                  "nothing" = "nothing",
-                  "gender" = "gender",
-                  "ethnicity" = "ethnicity",
-                  "age" = "age"
+                  "nothing",
+                  "gender",
+                  "ethnicity",
+                  "age"
                 ), selected = "nothing"),
     
+    ## Adding a colour-blindness mode toggle
     tags$h5("Colourblind mode", class = "text-center"),
     
-    # Wrap the switchInput in a div to centre it
+    # ...wrap the switchInput in a div to centre it
     div(
       switchInput(
         inputId = "Id018",
         label = "<i class=\"fa fa-thumbs-up\"></i>"
       ),
-      style = "text-align: center;"  # ...this will center the switch
+      style = "text-align: center;"  # ...this will centre the switch
     )
   ),
   
@@ -130,7 +132,7 @@ ui <- dashboardPage(
       tabBox(
         title = "Variable guide",
         id = "tabset1", height = "350px", width = 6,
-        # Use HTML for text formatting
+        # Using HTML for better text formatting
         tabPanel("Indices", 
                  HTML("The NHANES survey contained a simple scoring system for food consumption:
   <ul>
@@ -334,7 +336,7 @@ server <- function(input, output, session) {
     
     datatable(data_summary, options = list(
       pageLength = 5,
-      lengthChange = TRUE,
+      lengthChange = FALSE,
       bFilter = 0
     ))
   })
@@ -355,7 +357,8 @@ server <- function(input, output, session) {
   
   # The below prevents compareVar and dodgeVar from being set to identical 
   # values. If identical, it will switch dodgeVar to its default value of 
-  # ("nothing").
+  # "nothing". This was done to avoid an unsightly error message in the app.
+
 
   # Reactive value to store the last selected value of compareVar that is not "nothing"
   last_compareVar <- reactiveVal()
@@ -367,14 +370,14 @@ server <- function(input, output, session) {
     }
   })
   
-  # Observer for 'compareVar'
+  # ...observer for 'compareVar'
   observeEvent(input$compareVar, {
     if (input$compareVar == input$dodgeVar && input$compareVar != "nothing") {
       updateSelectInput(session, "dodgeVar", selected = "nothing")
     }
   }, ignoreInit = TRUE)
   
-  # Observer for 'dodgeVar'
+  # ...observer for 'dodgeVar'
   observeEvent(input$dodgeVar, {
     # Use the value stored in last_compareVar for comparison
     if (input$dodgeVar == last_compareVar() && input$dodgeVar != "nothing") {
@@ -385,6 +388,7 @@ server <- function(input, output, session) {
 }
 
 
-# ------------------------------ RUN APP -------------------------------------
+# ------------------------------- RUN APP -------------------------------------
 
-shinyApp(ui, server, options = list(launch.browser = TRUE))
+shinyApp(ui, server, options = list(
+  launch.browser = TRUE)) # ...force browser launch
