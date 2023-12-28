@@ -16,8 +16,8 @@ show_help() {
     echo "  -h    Display help"    
     echo "  -v    Skip static visualisations script"
     echo "  -s    Skip Shiny app script"
-    echo "  -a    Set minimum age to filter by (default is -a0 for 0 years old)"  # ...this is read by preprocess.sh
-    echo "  -A    Set maximum age to filter by (default is -A12 for 12 years old)"  # ...this is read by preprocess.sh
+    echo "  -a    Set minimum age to filter by (default is -a 0 for 0 years old). Ensure there's a space between '-a' and your chosen age."  # ...this is read by preprocess.sh
+    echo "  -A    Set maximum age to filter by (default is -A 12 for 12 years old). Ensure there's a space between '-A' and your chosen age."  # ...this is read by preprocess.sh
 }
 
 # Parse command line options

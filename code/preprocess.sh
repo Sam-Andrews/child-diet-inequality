@@ -2,7 +2,12 @@
 
 # Parse command line options
 
-while getopts "m:M:" opt; do
+
+# ...set default values if not specified
+min_age=0
+max_age=12
+
+while getopts "a:A:" opt; do
     case "$opt" in
     a) min_age=$OPTARG ;;
     A) max_age=$OPTARG ;;
@@ -43,10 +48,6 @@ join_files() {
 }
 
 # Function to filter by age
-# ...set default values if not specified
-
-min_age=0
-max_age=12
 
 filter_by_age() {
     local input_file=$1
