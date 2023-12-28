@@ -47,7 +47,7 @@ cb_colour_palette <- c(cb_col1, cb_col2, cb_col3, cb_col4, cb_col5, cb_col6,
 
 shiny_df <- readRDS(here::here("../clean", "data.rds"))
 
-# --------------------------------- UI ---------------------------------------
+# ---------------------------------- UI ---------------------------------------
 
 ui <- dashboardPage(
   
@@ -78,7 +78,9 @@ ui <- dashboardPage(
                 choices = c(
                   "gender",
                   "ethnicity",
-                  "age"
+                  "age",
+                  "annual household income",
+                  "size of household"
                 )),
     
     selectInput("dodgeVar", "and compares across...", 
@@ -86,7 +88,9 @@ ui <- dashboardPage(
                   "nothing",
                   "gender",
                   "ethnicity",
-                  "age"
+                  "age",
+                  "annual household income",
+                  "size of household"
                 ), selected = "nothing"),
     
     ## Adding a colour-blindness mode toggle
@@ -202,7 +206,7 @@ server <- function(input, output, session) {
   
   output$fruitBox <- renderValueBox({
     # Calculate the average fruit index
-    avg_fruit <- round(mean(shiny_df$`the fruit index`), digits = 2)
+    avg_fruit <- round(mean(shiny_df$`the fruit index`, na.rm = TRUE), digits = 2)
     valueBox(
       avg_fruit, "...average fruit index", icon = icon("fa-sharp fa-solid fa-lemon", lib = "font-awesome"),
       color = # ...color argument depends on colourblindness setting
@@ -217,7 +221,7 @@ server <- function(input, output, session) {
   
   output$vegBox <- renderValueBox({
     # Calculate the average veg index
-    avg_veg <- round(mean(shiny_df$`the vegetable index`), digits = 2)
+    avg_veg <- round(mean(shiny_df$`the vegetable index`, na.rm = TRUE), digits = 2)
     valueBox(
       avg_veg, "...average vegetable index", icon = icon("fa-sharp fa-solid fa-carrot", lib = "font-awesome"),
         color = # ...color argument depends on colourblindness setting
@@ -233,7 +237,7 @@ server <- function(input, output, session) {
   
   output$sugarBox <- renderValueBox({
     # Calculate the average sugar index
-    avg_sugar <- round(mean(shiny_df$`the sugar index`), digits = 2)
+    avg_sugar <- round(mean(shiny_df$`the sugar index`, na.rm = TRUE), digits = 2)
     valueBox(
       avg_sugar, "...average sugar index", icon = icon("fa-sharp fa-solid fa-cubes-stacked", lib = "font-awesome"),
       color = # ...color argument depends on colourblindness setting
@@ -250,7 +254,17 @@ server <- function(input, output, session) {
   output$plot1 <- renderPlot({
     req(input$outcomeVar, input$compareVar)
     
-    data <- shiny_df
+    
+    # Define data frame, filtering out NAs
+    data <- shiny_df %>%
+      dplyr::filter(!is.na(.data[[input$outcomeVar]]), 
+                    !is.na(.data[[input$compareVar]]))
+    
+    # Additional filter if dodgeVar is not "nothing"
+    if(input$dodgeVar != "nothing") {
+      data <- data %>%
+        dplyr::filter(!is.na(.data[[input$dodgeVar]]))
+    }
     
     # Define compareVar and dodgeVar
     compareVar <- paste0("`", input$compareVar, "`")
@@ -282,7 +296,9 @@ server <- function(input, output, session) {
         geom_bar(stat = "identity", position = position_dodge(width = 0.9)) +
         scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
         labs(y = "Proportion of unhealthy consumption", x = input$compareVar) +
-        theme_bw()
+        theme_bw() +
+        # ...to avoid overlapping x axis text:
+        theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
     } else {
       # For continuous outcomeVar, proceed with the original plotting method
       outcomeVar <- paste0("`", input$outcomeVar, "`")
@@ -295,11 +311,13 @@ server <- function(input, output, session) {
           scale_fill_manual(values = colour_palette)
         }
       
-      # For continuous outcomeVar, display the average mean
+      # For continuous outcomeVar, display the mean for the index
       p <- p + 
         geom_bar(stat = "summary", fun.y = "mean", position = position_dodge(width = 0.9)) +
-        labs(y = "Average Mean", x = input$compareVar) +
-        theme_bw()
+        labs(y = "Mean Index Score", x = input$compareVar) +
+        theme_bw() +
+        # ...to avoid overlapping x axis text:
+        theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
     }
     
     # Print plot object
@@ -341,18 +359,6 @@ server <- function(input, output, session) {
     ))
   })
   
-  # Download plot button - possibly won't implement
-  # output$downloadPlot <- downloadHandler(
-  #   filename = function() {
-  #     paste("my-plot", Sys.Date(), ".png", sep = "")
-  #   },
-  #   content = function(file) {
-  #     # Directly create the plot here
-  #     plot_to_save <- p
-  #     
-  #     ggsave(file, plot = plot_to_save, device = "png")
-  #   }
-  # )
 
   
   # The below prevents compareVar and dodgeVar from being set to identical 
@@ -391,4 +397,4 @@ server <- function(input, output, session) {
 # ------------------------------- RUN APP -------------------------------------
 
 shinyApp(ui, server, options = list(
-  launch.browser = TRUE)) # ...force browser launch
+  launch.browser = TRUE)) # ...force browser launch instead of GUI window
