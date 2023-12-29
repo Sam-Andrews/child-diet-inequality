@@ -3,9 +3,9 @@
 
 # ----------------------------------------------------------------------------
 
-# Run libraries
+# Run required libraries
 
-renv::restore() # ...restore renv packages
+renv::restore() # ...restore packages from renv.lock
 
 library(here) # ...for relative path file management
 library(dplyr) # ...for data wrangling
@@ -14,17 +14,14 @@ library(tidyr) # ...for data manipulation functions
 library(stringr) # ...for string manipulation functions
 library(svglite) # ...for saving in SVG format
 
-
-
-# Read dataset
-
-clean_df <- read.csv(here("../clean", "clean_data.csv"))
-
-
 # Read command-line flags
 
 args <- commandArgs(trailingOnly = TRUE)
-print(args)
+
+
+# Read dataframe
+
+clean_df <- read.csv(here("../clean", "clean_data.csv"))
 
 
 # ----------------------------------------------------------------------------
