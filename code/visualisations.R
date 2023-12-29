@@ -3,7 +3,7 @@
 
 # ----------------------------------------------------------------------------
 
-## Run libraries
+# Run libraries
 
 renv::restore() # ...restore renv packages
 
@@ -12,12 +12,20 @@ library(dplyr) # ...for data wrangling
 library(ggplot2) # ...for data visualisation
 library(tidyr) # ...for data manipulation functions
 library(stringr) # ...for string manipulation functions
+library(svglite) # ...for saving in SVG format
 
 
 
-## Read dataset
+# Read dataset
 
 clean_df <- read.csv(here("../clean", "clean_data.csv"))
+
+
+# Read command-line flags
+
+args <- commandArgs(trailingOnly = TRUE)
+print(args)
+
 
 # ----------------------------------------------------------------------------
 
@@ -53,11 +61,27 @@ index_vis <- ggplot(clean_df) +
 
 
 ## Save visualisation to 'visualisations' directory
+## ...if -g flag is set, save as SVG. Else, save as PNG.
 
-ggsave("index_vis.png", plot = last_plot(), 
-       path = here::here("../visualisations"),
-       width = 5, height = 3,
-       dpi = 800)
+if("-g" %in% args) {
+  
+  print("Saving first visualisation in SVG format...")
+  
+  ggsave("index_vis.svg", plot = last_plot(), 
+         path = here::here("../visualisations"),
+         width = 5, height = 3,
+         dpi = 800)
+  
+} else {
+  
+  print("Saving first visualisation in PNG format...")
+  
+  ggsave("index_vis.png", plot = last_plot(), 
+         path = here::here("../visualisations"),
+         width = 5, height = 3,
+         dpi = 800)
+  
+}
 
 
 # ---------------------------------------------------------------------------
@@ -128,11 +152,25 @@ extreme_vis <- ggplot(clean_df_long, aes(x = freq_label, y = Yes_proportion,
 
 
 ## Save visualisation to visualisations directory
+## ...if -g flag is set, save as SVG. Else, save as PNG.
 
-ggsave("extreme_consumption.png", plot = last_plot(), 
-       path = here::here("../visualisations"),
-       width = 7, height = 5,
-       dpi = 800)
+if("-g" %in% args) {
+  
+  print("Saving second visualisation in SVG format")
+  
+  ggsave("extreme_consumption.svg", plot = last_plot(), 
+         path = here::here("../visualisations"),
+         width = 7, height = 5,
+         dpi = 800)
+} else {
+  
+  print("Saving second visualisation in PNG format")
+  
+  ggsave("extreme_consumption.png", plot = last_plot(), 
+         path = here::here("../visualisations"),
+         width = 7, height = 5,
+         dpi = 800)
+}
 
 
 # ---------------------------------------------------------------------------

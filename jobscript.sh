@@ -12,7 +12,7 @@ run_in_parallel=false
 # Function to display help via `./jobscript.sh -h`
 
 show_help() {
-    echo "Usage: $0 [-h -v -s -a -A -p]"
+    echo "Usage: $0 [-h -v -s -a -A -p -g]"
     echo "Options:"
     echo "  -h    Display help"    
     echo "  -v    Skip static visualisations script"
@@ -20,11 +20,15 @@ show_help() {
     echo "  -a    Set minimum age (default is -a 0 for 0 years old). Ensure there's a space between '-a' and your chosen age."  # ...this is read by preprocess.sh
     echo "  -A    Set maximum age (default is -A 12 for 12 years old). Ensure there's a space between '-A' and your chosen age."  # ...this is read by preprocess.sh
     echo "  -p    Run visualisations.R and Shiny app.R scripts in parallel (default is to run sequentially)"
+    echo "  -g    Save static visualisations in SVG format (default is PNG). This is ideal for publishing."
+    #echo "  -u    Open Shiny app in GUI (default is to open in browser)."
 }
+
+shift $((OPTIND-1))
 
 # Parse command line options
 
-while getopts "hvsp" opt; do
+while getopts "hvspaAg" opt; do
     case "$opt" in
     h) 
         show_help
@@ -35,8 +39,10 @@ while getopts "hvsp" opt; do
     p) run_in_parallel=true ;; # ...flag to run scripts in parallel
     a) ;; # ...recognise flag but do nothing (since it's for preprocess.sh)
     A) ;; # ...recognise flag but do nothing (since it's for preprocess.sh)
+    g) ;; # ...recognise flag but do nothing (since it's for visualisations.R)
     *)
-        echo "Your specified flag was not recognised. The available flags are as follows:"
+        echo "...that's a red flag!" 
+        echo "Your specified flag is not recognised. The available flags are as follows:"
         show_help
         exit 1
         ;;
@@ -47,13 +53,15 @@ done
 if $run_in_parallel; then
     if $skip_visualisations || $skip_shiny_app; then
         echo "Error: The -p flag cannot be used with -s or -v."
+        echo "Error: -p with -s or -v? Oh sure, let's run fast and skip everything. Makes perfect sense ;)"
+        echo "Error: -p alongside -s or -v? Next, we'll be running marathons in flip-flops..."
         exit 1
     fi
 fi
 
 # Set directory to where scripts are stored
 
-cd code || { echo "Failed to change directory to 'code'. Make sure your directory strucutre is exactly as outlined in README.md."; exit 1; }
+cd code || { echo echo "Hmmm, can't step into 'code' directory. Did it wander off? Please make sure it's where it should be, as per README.md."; exit 1; }
 
 
 # Run data processing script
@@ -72,7 +80,8 @@ Rscript data_wrangling.R || { echo "Failed to run data wrangling script."; exit 
 # Function to run data visualisation script
 run_visualisations() {
     echo "RUNNING DATA VISUALISATION SCRIPT..."
-    Rscript visualisations.R || { echo "Failed to run data visualisation script."; exit 1; }
+    echo "Passing arguments to Rscript: $@"
+    Rscript visualisations.R "$@" || { echo "Failed to run data visualisation script."; exit 1; }
 }
 
 # Function to run Shiny app script
@@ -82,21 +91,21 @@ run_shiny_app() {
 }
 
 
-# Run scripts based on flags
+# Run visualisations and Shiny scripts based on flags
 if $run_in_parallel; then
     if ! $skip_visualisations; then
-        run_visualisations &
+        run_visualisations "$@" &
     fi
     if ! $skip_shiny_app; then
-        run_shiny_app &
+        run_shiny_app "$@" &
     fi
     wait # Wait for all background processes to finish
 else
     if ! $skip_visualisations; then
-        run_visualisations
+        run_visualisations "$@"
     fi
     if ! $skip_shiny_app; then
-        run_shiny_app
+        run_shiny_app "$@"
     fi
 fi
 
