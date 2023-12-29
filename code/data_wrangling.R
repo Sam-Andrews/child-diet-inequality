@@ -30,9 +30,11 @@ if (file.exists(sourcepath)) {
 
 renv::restore() # ...restore renv environment
 
-library(here) # ...for relative path file management
-library(dplyr) # ...for data wrangling
-library(tidyr) # ...for data manipulation
+suppressMessages({ # ...removes clutter in the terminal (doesn't hide errors)
+  library(here) # ...for relative path file management
+  library(dplyr) # ...for data wrangling
+  library(tidyr) # ...for data manipulation
+})
 
 
 # Read command-line flags
@@ -49,10 +51,48 @@ df <- read.csv(here::here("../raw", # ...file path to dataset
 
 # ----------------------------------------------------------------------------
 
-# Recode variables with descriptive strings for visualisation.
+# Internal validation checks
+
+print("Conducting internal validation checks...")
+
+nrow_df1 <- nrow(df)
+
+# ...check that 'age in months' is in line with 'age in years
+df_age <- df %>%
+  dplyr::mutate(RIDAGEMN_yr = RIDAGEMN / 12) %>% # ...divide age in months by 12
+  dplyr::filter(abs(RIDAGEYR - RIDAGEMN_yr) < 1) %>% # ...filter out cases
+  select(-RIDAGEMN, -RIDAGEMN_yr) # ...remove unneeded variables
+
+
+# ...filter out cases with more than 10% missing data
+df_missing <- df_age %>%
+  # ...add new column that calculates the proportion of missing values per row
+  mutate(prop_missing = rowSums(is.na(.)) / ncol(.)) %>%
+  # ...filter out rows where the proportion of missing values > 10%
+  filter(prop_missing <= 0.10) %>%
+  # ...remove unneeded variable
+  select(-prop_missing)
+
+
+nrow_df2 <- nrow(df_age)
+
+
+print(paste0("...Number of cases lost due to interval validation: ", 
+             nrow_df1 - nrow_df2))
+
+
+df <- df_missing
+
+# ----------------------------------------------------------------------------
+
+# Recode variables with more intuitive values
 # Treat them as factors for plot ordering purposes.
 
+print("Recoding variables...")
+
 # Gender
+# ...this is more appropriately a 'sex' variable; no gender-spectrum identities
+#    were recorded.
 
 df <- df %>%
   dplyr::mutate(RIAGENDR = factor(case_when(
@@ -61,6 +101,7 @@ df <- df %>%
   ), levels = c("Male", "Female")))
 
 # Ethnicity
+# ...combining some groups due to small subsamples
 
 df <- df %>%
   dplyr::mutate(RIDRETH1 = factor(case_when(
@@ -72,7 +113,9 @@ df <- df %>%
   ), levels = c("Mexican American", "Other Hispanic", "White American", 
                 "Black American", "Other")))
 
+
 # Household income
+# ...combining groups due to small subsamples
 
 df <- df %>%
   dplyr::mutate(INDHHINC = factor(case_when(
@@ -91,19 +134,21 @@ df <- df %>%
                 "$45,000-$64,999", "$65,000+")))
 
 
-
 # Age groups
 
 df <- df %>%
   dplyr::mutate(RIDAGEYR = factor(case_when(
     RIDAGEYR <= 4 ~ "4 and under",
     RIDAGEYR > 4 & RIDAGEYR <= 8 ~ "5 to 8",
-    RIDAGEYR > 8 ~ "9 and above"
+    # ...need upper age cut-off in case user configures different age cut-offs
+    #    in the command line:
+    RIDAGEYR > 8 & RIDAGEYR < 13 ~ "9 and above"
   ), levels = c("4 and under", "5 to 8", "9 and above")))
 
 
 
 # Household size
+# ...combining groups due to small subsamples
 
 df <- df %>%
   dplyr::mutate(DMDHHSIZ = factor(case_when(
@@ -116,7 +161,9 @@ df <- df %>%
 
 
 # ----------------------------------------------------------------------------
-## Function to produce index for a range of columns
+# Function to produce index for a given range of columns
+
+print("Constructive derived variables...")
 
 make_index <- function(data, start_col, end_col) {
   
@@ -130,21 +177,18 @@ make_index <- function(data, start_col, end_col) {
          and end column.")
   }
   
-  # Create a sequence of indices
-  cols_seq <- seq(from = min(cols_indices), to = max(cols_indices))
+  # Create a range of column names
+  cols_range <- names(data)[min(cols_indices):max(cols_indices)]
   
-  # Calculate the sum of non-NA values for each row
-  sum_non_na <- rowSums(data[, cols_seq, drop = FALSE], na.rm = TRUE)
-  
-  # Count the number of non-NA values for each row
-  count_non_na <- apply(data[, cols_seq], 1, function(x) length(na.omit(x)))
-  
-  # Calculate the mean by dividing sum by count of non-NAs
-  sum_non_na / count_non_na
+  # Use dplyr to calculate the mean of non-NA values across the specified columns
+  data %>%
+    rowwise() %>%
+    mutate(mean_value = mean(c_across(all_of(cols_range)), na.rm = TRUE)) %>%
+    ungroup() %>%
+    pull(mean_value)
 }
 
-
-## Call function for each of our column ranges
+# Call function for each of our column ranges
 
 df$fruit_index <- make_index(df, "FFQ0016", "FFQ0027") # ...fruit index
 df$veg_index <- make_index(df, "FFQ0028", "FFQ0057") # ...veg index
@@ -170,7 +214,8 @@ any_fruitveg <- function(data, start_col_name, end_col_name, name_prefix) {
   
   for (i in 1:4) {
     var_name <- paste0(name_prefix, "_", i)
-    data[[var_name]] <- apply(data_slice, 1, function(x) all(x <= i, na.rm = TRUE))
+    data[[var_name]] <- apply(data_slice, 1, function(x) all(x <= i, 
+                                                             na.rm = TRUE))
     data[[var_name]] <- factor(ifelse(data[[var_name]], "Yes", "No"))
   }
   
@@ -209,6 +254,7 @@ df <- extreme_sugar(df, "FFQ0112", "FFQ0120", "sugar")
 
 ## Produce dedicated data frame for Shiny app
 
+print("Producing clean dataset...")
 
 # Set 'natural language' names for variables (backticks allow for space chars)
 
@@ -226,9 +272,11 @@ shiny_df <- df %>%
                 `high sugar consumption` = sugar_9)
 
 
-# Select only required variables
+# Select only required variables for Shiny app
+# ...this is important for app performance
 
-new_shiny <- shiny_df[, 69:79]
+new_shiny <- shiny_df %>%
+  dplyr::select(fruit_index:`high sugar consumption`)
 
 saveRDS(new_shiny, file = here::here("../clean", "data.rds"))
 
@@ -237,7 +285,8 @@ print("Data wrangling script fully executed.")
 
 # ----------------------------------------------------------------------------
 
-# Save cleaned 'study dataset' in the `clean/` directory based off flags
+# Save cleaned 'study dataset' in the `clean/`
+# ...user-set flags determine which fields are saved
 
 if("-d" %in% args) {
   print("Saving full dataset to `clean/` directory")
@@ -252,5 +301,5 @@ if("-d" %in% args) {
   write.csv(df, file = here::here("../clean", "clean_data.csv"))
 }
 
-# ----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 #                               END OF SCRIPT
