@@ -1,9 +1,4 @@
 # Hide output files until they are ready
-raw/merged.csv
-clean/clean_data.csv
-visualisations/extreme_consumption.png
-visualisations/index_vis.png
-clean/data.rds
 
 .Rproj.user
 code/rsconnect

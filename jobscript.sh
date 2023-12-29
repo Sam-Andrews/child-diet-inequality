@@ -141,8 +141,8 @@ fi
 
 # Delete old data
 
-#rm ../clean/data.rds
-#rm ../raw/merged.csv
+rm ../clean/data.rds
+rm ../raw/merged.csv
 
 
 # All scripts run
