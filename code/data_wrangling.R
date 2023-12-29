@@ -163,7 +163,7 @@ df <- df %>%
 # ----------------------------------------------------------------------------
 # Function to produce index for a given range of columns
 
-print("Constructive derived variables...")
+print("Constructing derived variables...")
 
 make_index <- function(data, start_col, end_col) {
   

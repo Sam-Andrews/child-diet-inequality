@@ -15,7 +15,7 @@ keep_fields=false
 # Function to display help via `./jobscript.sh -h`
 
 show_help() {
-    echo "Usage: $0 [-h -v -s -d -a -A -p -g -i]"
+    echo "Usage: ./$0 [-h -v -s -d -a -A -p -g -i]"
     echo ""
     echo "For more information about these flags, please see README_code.md."
     echo ""
@@ -106,6 +106,9 @@ bash preprocess.sh "$@" || { echo "Failed to run data processing script."; exit 
 echo "RUNNING DATA WRANGLING SCRIPT..."
 Rscript data_wrangling.R "$@" || { echo "Failed to run data wrangling script."; exit 1; }
 
+# Remove old data
+
+rm ../raw/merged.csv
 
 # Function to run data visualisation script
 run_visualisations() {
@@ -139,10 +142,9 @@ else
     fi
 fi
 
-# Delete old data
+# Delete Shiny-specific data
 
 rm ../clean/data.rds
-rm ../raw/merged.csv
 
 
 # All scripts run

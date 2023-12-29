@@ -43,13 +43,14 @@ Or, to see customisation options:
 
 ### Directory structure
 
-Scripts require the following directory structure to function (output files are denoted with `*`) :
+Scripts require the following structure (output files are denoted with `*`) :
 
 ```
 ProjectRoot/
 │
 ├── README.md
 ├── job_script.R
+├── report.pdf
 │
 ├── code/
 │ ├── preprocess.sh
@@ -64,6 +65,7 @@ ProjectRoot/
 ├── raw/
 │ ├── DEMO_D.csv
 │ ├── FFQRAW_D.csv
+│ ├── BMI.csv
 │
 ├── clean/
 │ ├── clean_data.csv*
