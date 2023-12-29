@@ -69,6 +69,7 @@ ProjectRoot/
 │
 ├── clean/
 │ ├── clean_data.csv*
+│ ├── variable_guide.md
 │
 ├── visualisations/
 │ ├── extreme_consumption.png*
