@@ -43,11 +43,8 @@ col_5 <- "#FAA275"
 col_6 <- "#BE97C6"
 col_7 <- "#5C374C"
 col_8 <- "#808F4D"
-col_9 <- "#A0DAA9"
-col_10 <- "#363537"
 
-colour_palette <- c(col_1, col_2, col_3, col_4, col_5, col_6, col_7, col_8,
-                   col_9, col_10)
+colour_palette <- c(col_1, col_2, col_3, col_4, col_5, col_6, col_7, col_8)
 
 # Set colour-blindness-friendly colours for plotting
 
@@ -205,10 +202,6 @@ within fruit, veg, and sugar-related food categories.")
       Therefore, it's important not to generalise what these variables tell us 
       about particular demographics."))
       ),
-      
-      # Download plot button - possibly won't implement
-      #downloadButton("downloadPlot", "Download Plot"),
-      
     ),
   ),
 )
@@ -333,7 +326,7 @@ server <- function(input, output, session) {
       
       # For continuous outcomeVar, display the mean for the index
       p <- p + 
-        geom_bar(stat = "summary", fun.y = "mean", position = position_dodge(width = 0.9)) +
+        geom_bar(stat = "summary", fun = "mean", position = position_dodge(width = 0.9)) +
         labs(y = "Mean Index Score", x = input$compareVar) +
         theme_bw() +
         # ...to avoid overlapping x axis text:
@@ -424,9 +417,7 @@ if("-i" %in% args) {
   print("Trying to run app in the GUI...")
   print("Press Ctrl + C // Cmd + C when finished")
   
-  print(shinyApp(ui, server, options = list(
-    launch.browser = FALSE # ...enable GUI launch
-  )))
+  shinyApp(ui, server) # ...launch in default (GUI)
   
 } else {
   
@@ -436,6 +427,6 @@ if("-i" %in% args) {
   print("Press Ctrl + C // Cmd + C when finished")
   
   shinyApp(ui, server, options = list(
-    launch.browser = TRUE # ...force browser launch instead of GUI window
+    launch.browser = TRUE # ...force browser launch instead of GUI
   ))
 }
