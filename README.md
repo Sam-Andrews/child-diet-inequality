@@ -43,7 +43,7 @@ Or, to see customisation options:
 
 ### Directory structure
 
-Scripts require the following directory structure to function (output files are denoted with `*`) :
+Scripts assume the following structure (output files are denoted with `*`) :
 
 ```
 ProjectRoot/
@@ -67,6 +67,7 @@ ProjectRoot/
 │
 ├── clean/
 │ ├── clean_data.csv*
+│ ├── variable_guide.md
 │
 ├── visualisations/
 │ ├── extreme_consumption.png*
