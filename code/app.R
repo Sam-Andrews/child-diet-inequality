@@ -1,7 +1,7 @@
 # Source activate.R as a failsafe (should it not automatically run)
 
-# ...define the path using the 'here' package
-sourcepath <- here("renv", "activate.R")
+# ...define the path
+sourcepath <- ("renv/activate.R")
 
 # ...check if activate.R exists and source it
 if (file.exists(sourcepath)) {
