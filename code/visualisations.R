@@ -20,12 +20,14 @@ if (file.exists(sourcepath)) {
 
 renv::restore() # ...restore packages from renv.lock
 
-library(here) # ...for relative path file management
-library(dplyr) # ...for data wrangling
-library(ggplot2) # ...for data visualisation
-library(tidyr) # ...for data manipulation functions
-library(stringr) # ...for string manipulation functions
-library(svglite) # ...for saving in SVG format
+suppressMessages({ # ...removes clutter in the terminal (doesn't hide errors)
+  library(here) # ...for relative path file management
+  library(dplyr) # ...for data wrangling
+  library(ggplot2) # ...for data visualisation
+  library(tidyr) # ...for data manipulation functions
+  library(stringr) # ...for string manipulation functions
+  library(svglite) # ...for saving in SVG format
+})
 
 # Read command-line flags
 
@@ -42,6 +44,8 @@ clean_df <- read.csv(here("../clean", "clean_data.csv"))
 ## Plots
 
 # First plot: Density plot to show distribution for indices
+
+print("Creating first static data visualisation")
 
 index_vis <- ggplot(clean_df) +
   # Add a density plot geom layer for index, with transparency (`alpha`)
@@ -96,7 +100,10 @@ if("-g" %in% args) {
 
 # ---------------------------------------------------------------------------
 
+# Second plot: prevelence of unhealthy consumption frequency
+# ...need to do some data wrangling first
 
+print("Creating second static data visualisation")
 
 # Pivot longer' to aggregate groups and calculate proportions for each category
 
@@ -165,14 +172,14 @@ extreme_vis <- ggplot(clean_df_long, aes(x = freq_label, y = Yes_proportion,
 ## ...if -g flag is set, save as SVG. Else, save as PNG.
 
 if("-g" %in% args) {
-  print("Saving second visualisation in SVG format")
+  print("Saving second visualisation in SVG format...")
   ggsave("extreme_consumption.svg", plot = last_plot(), 
          path = here::here("../visualisations"),
          width = 7, height = 5,
          dpi = 800)
 } else {
   
-  print("Saving second visualisation in PNG format")
+  print("Saving second visualisation in PNG format...")
   ggsave("extreme_consumption.png", plot = last_plot(), 
          path = here::here("../visualisations"),
          width = 7, height = 5,
@@ -180,7 +187,5 @@ if("-g" %in% args) {
 }
 
 
-# ---------------------------------------------------------------------------
-
-
-print("Visualisation script fully executed.")
+# -----------------------------------------------------------------------------
+#                               END OF SCRIPT

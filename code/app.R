@@ -15,14 +15,16 @@ if (file.exists(sourcepath)) {
 
 renv::restore() # ...restore packages from renv.lock
 
-library(shinydashboard)
-library(ggplot2)
-library(dplyr)
-library(shinyWidgets)
-library(DT)
-library(here)
-library(shiny)
-
+suppressMessages({ # ...removes clutter in the terminal (doesn't hide errors)
+  library(shiny) # ...for main Shiny elements
+  library(shinydashboard) # ...for dashboard set-up
+  library(ggplot2) # ...for the plot server logic
+  library(dplyr) # ...for data wrangling
+  library(shinyWidgets) # ...for special widgets
+  library(DT) # ...for data table management
+  library(here) # ...for relative file path management
+})
+  
 # Read command-line flags
 
 args <- commandArgs(trailingOnly = TRUE)
@@ -430,3 +432,5 @@ if("-i" %in% args) {
     launch.browser = TRUE # ...force browser launch instead of GUI
   ))
 }
+# -----------------------------------------------------------------------------
+#                               END OF SCRIPT
