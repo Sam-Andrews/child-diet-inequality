@@ -8,7 +8,8 @@
 #
 # Creating dummy variables signifying whether respondent consumed fruit, veg
 # and sugar at each response level
-
+#
+# Saving the cleaned study dataset in the `clean/` directory
 
 # ----------------------------------------------------------------------------
 
@@ -78,19 +79,6 @@ df <- df %>%
 
 
 
-
-# Whether child is in education
-# Note that this has merged 'school' response options to create an 'in
-# education / out of education' binary classifier
-
- df <- df %>%
-   dplyr::mutate(DMDSCHOL = factor(case_when(
-     DMDSCHOL == 1 ~ "In education",
-     DMDSCHOL == 2 ~ "In education",
-     DMDSCHOL == 3 ~ "Not in education"
-   ), levels = c("In education", "Not in education")))
-
-
 # Age groups
 
 df <- df %>%
@@ -114,6 +102,7 @@ df <- df %>%
     levels = c("1 to 3 members",
                "4 to 5 members",
                "6+ members")))
+
 
 # ----------------------------------------------------------------------------
 ## Function to produce index for a range of columns
@@ -165,41 +154,18 @@ df[] <- lapply(df, function(x) { if(is.numeric(x)) {
 # First, the function for fruit and veg
 
 any_fruitveg <- function(data, start_col_name, end_col_name, name_prefix) {
-  # Identify the range of columns based on names
   cols_range <- which(names(data) %in% c(start_col_name, end_col_name))
-  start_col <- min(cols_range)
-  end_col <- max(cols_range)
+  data_slice <- data[, min(cols_range):max(cols_range)]
   
-  # Function to check if all values in a row are less than or equal to a specified limit
-  check_limit <- function(row, limit) {
-    all(row <= limit, na.rm = TRUE)
+  for (i in 1:4) {
+    var_name <- paste0(name_prefix, "_", i)
+    data[[var_name]] <- apply(data_slice, 1, function(x) all(x <= i, na.rm = TRUE))
+    data[[var_name]] <- factor(ifelse(data[[var_name]], "Yes", "No"))
   }
-  
-  # Creating the first dummy variable
-  # It checks if all values in the specified range are less than or equal to x
-  
-  var_name_1 <- paste0(name_prefix, "_1")
-  data[[var_name_1]] <- apply(data[,start_col:end_col], 1, function(x) check_limit(x, 1))
-  data[[var_name_1]] <- ifelse(data[[var_name_1]], "Yes", "No")
-  data[[var_name_1]] <- factor(data[[var_name_1]]) # Convert to factor
-  
-  var_name_2 <- paste0(name_prefix, "_2")
-  data[[var_name_2]] <- apply(data[,start_col:end_col], 1, function(x) check_limit(x, 2))
-  data[[var_name_2]] <- ifelse(data[[var_name_2]], "Yes", "No")
-  data[[var_name_2]] <- factor(data[[var_name_2]]) # Convert to factor
-  
-  var_name_3 <- paste0(name_prefix, "_3")
-  data[[var_name_3]] <- apply(data[,start_col:end_col], 1, function(x) check_limit(x, 3))
-  data[[var_name_3]] <- ifelse(data[[var_name_3]], "Yes", "No")
-  data[[var_name_3]] <- factor(data[[var_name_3]]) # Convert to factor
-  
-  var_name_4 <- paste0(name_prefix, "_4")
-  data[[var_name_4]] <- apply(data[,start_col:end_col], 1, function(x) check_limit(x, 4))
-  data[[var_name_4]] <- ifelse(data[[var_name_4]], "Yes", "No")
-  data[[var_name_4]] <- factor(data[[var_name_4]]) # Convert to factor
   
   return(data)
 }
+
 
 # Apply function to fruit and veg indices
 
@@ -210,32 +176,22 @@ df <- any_fruitveg(df, "FFQ0028", "FFQ0057", "veg")
 ## Now a similar function for sugar consumption
 
 extreme_sugar <- function(data, start_col_name, end_col_name, name_prefix) {
-  # Identify the range of columns based on names
   cols_range <- which(names(data) %in% c(start_col_name, end_col_name))
-  start_col <- min(cols_range)
-  end_col <- max(cols_range)
+  data_slice <- data[, min(cols_range):max(cols_range)]
   
-  # Function to check if all values in a row are greater than or equal to a specified limit
-  check_limit <- function(row, limit) {
-    any(row >= limit, na.rm = TRUE)
-  }
-  
-  # Create dummy variables for each threshold
-  thresholds <- c(8, 9, 10, 11)
-  for (limit in thresholds) {
+  for (limit in 8:11) {
     var_name <- paste0(name_prefix, "_", limit)
-    data[[var_name]] <- apply(data[, start_col:end_col], 1, function(x) check_limit(x, limit))
-    data[[var_name]] <- ifelse(data[[var_name]], "Yes", "No")
-    data[[var_name]] <- factor(data[[var_name]]) # Convert to factor
+    data[[var_name]] <- apply(data_slice, 1, function(x) any(x >= limit, na.rm = TRUE))
+    data[[var_name]] <- factor(ifelse(data[[var_name]], "Yes", "No"))
   }
   
   return(data)
 }
 
+
 # Apply function to sugar variables
 
 df <- extreme_sugar(df, "FFQ0112", "FFQ0120", "sugar")
-
 
 
 # ----------------------------------------------------------------------------
@@ -273,15 +229,11 @@ print("Data wrangling script fully executed.")
 # Save cleaned 'study dataset' in the `clean/` directory based off flags
 
 if("-d" %in% args) {
-  
   print("Saving full dataset to `clean/` directory")
-  
   write.csv(df, file = here::here("../clean", "clean_data.csv"))
   
 } else {
-  
   print("Saving trimmed dataset to `clean/` directory")
-  
   df <- df %>%
     dplyr::select(SEQN, RIAGENDR, RIDAGEYR, RIDRETH1, DMDHHSIZ, INDHHINC,
                   fruit_index, veg_index, sugar_index, fruit_1:sugar_11)
