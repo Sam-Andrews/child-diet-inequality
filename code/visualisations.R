@@ -3,6 +3,19 @@
 
 # ----------------------------------------------------------------------------
 
+# Source activate.R as a failsafe (should it not automatically run)
+
+# ...define the path using the 'here' package
+sourcepath <- here("renv", "activate.R")
+
+# ...check if activate.R exists and source it
+if (file.exists(sourcepath)) {
+  source(sourcepath)
+} else {
+  stop("activate.R file not found. Please ensure it exists at ", sourcepath)
+}
+
+
 # Run required libraries
 
 renv::restore() # ...restore packages from renv.lock
@@ -152,9 +165,7 @@ extreme_vis <- ggplot(clean_df_long, aes(x = freq_label, y = Yes_proportion,
 ## ...if -g flag is set, save as SVG. Else, save as PNG.
 
 if("-g" %in% args) {
-  
   print("Saving second visualisation in SVG format")
-  
   ggsave("extreme_consumption.svg", plot = last_plot(), 
          path = here::here("../visualisations"),
          width = 7, height = 5,
@@ -162,7 +173,6 @@ if("-g" %in% args) {
 } else {
   
   print("Saving second visualisation in PNG format")
-  
   ggsave("extreme_consumption.png", plot = last_plot(), 
          path = here::here("../visualisations"),
          width = 7, height = 5,

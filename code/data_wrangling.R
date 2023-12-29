@@ -13,7 +13,20 @@
 
 # ----------------------------------------------------------------------------
 
-## Run libraries
+# Source activate.R as a failsafe (should it not automatically run)
+
+# ...define the path using the 'here' package
+sourcepath <- here("renv", "activate.R")
+
+# ...check if activate.R exists and source it
+if (file.exists(sourcepath)) {
+  source(sourcepath)
+} else {
+  stop("activate.R file not found. Please ensure it exists at ", sourcepath)
+}
+
+
+# Run libraries
 
 renv::restore() # ...restore renv environment
 

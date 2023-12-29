@@ -1,3 +1,16 @@
+# Source activate.R as a failsafe (should it not automatically run)
+
+# ...define the path using the 'here' package
+sourcepath <- here("renv", "activate.R")
+
+# ...check if activate.R exists and source it
+if (file.exists(sourcepath)) {
+  source(sourcepath)
+} else {
+  stop("activate.R file not found. Please ensure it exists at ", sourcepath)
+}
+
+
 # Run required libraries
 
 renv::restore() # ...restore packages from renv.lock
@@ -101,7 +114,7 @@ ui <- dashboardPage(
                 ), selected = "nothing"),
     
     ## Adding a colour-blindness mode toggle
-    tags$h5("Colourblind mode", class = "text-center"),
+    tags$h5("Colourblind-friendly mode", class = "text-center"),
     
     # ...wrap the switchInput in a div to centre it
     div(
