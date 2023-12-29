@@ -29,13 +29,13 @@ Since this pipeline uses `renv` for automatic dependency management, you do not 
 
 Before running the pipeline, it should first be made executable. Navigate to the project's root directory and run:
 ```
-chmod +x job_script.sh
+chmod +x jobscript.sh
 ```
 From here, you may simply run:
 ```
-./job_script.sh
+./jobscript.sh
 ```
 Alternatively, this pipeline has customisation options. These can be accessed through running:
 ```
-./job_script.sh -h
+./jobscript.sh -h
 ```
