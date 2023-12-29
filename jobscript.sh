@@ -3,32 +3,35 @@
 ### This script can be used to automatically run the project's data processing pipeline ###
 ### It is intended to be run from the project's root directory ###
 
-# Initialise variables
+# Initialise flag variables
 
 skip_visualisations=false
 skip_shiny_app=false
 run_in_parallel=false
+save_svg=false
+shiny_gui=false
 
 # Function to display help via `./jobscript.sh -h`
 
 show_help() {
-    echo "Usage: $0 [-h -v -s -a -A -p -g]"
+    echo "Usage: $0 [-h -v -s -a -A -p -g -i]"
     echo "Options:"
     echo "  -h    Display help"    
     echo "  -v    Skip static visualisations script"
     echo "  -s    Skip Shiny app script"
-    echo "  -a    Set minimum age (default is -a 0 for 0 years old). Ensure there's a space between '-a' and your chosen age."  # ...this is read by preprocess.sh
-    echo "  -A    Set maximum age (default is -A 12 for 12 years old). Ensure there's a space between '-A' and your chosen age."  # ...this is read by preprocess.sh
+    echo "  -a    Set minimum age (default is -a 0 for 0 years old). 
+        Ensure there's a space between '-a' and your chosen age."  # ...this is read by preprocess.sh
+    echo "  -A    Set maximum age (default is -A 12 for 12 years old). 
+        Ensure there's a space between '-A' and your chosen age."  # ...this is read by preprocess.sh
     echo "  -p    Run visualisations.R and Shiny app.R scripts in parallel (default is to run sequentially)"
-    echo "  -g    Save static visualisations in SVG format (default is PNG). This is ideal for publishing."
-    #echo "  -u    Open Shiny app in GUI (default is to open in browser)."
+    echo "  -g    Save static visualisations in SVG format (default is PNG). This is ideal for publishing." # ...this is read by visualisations.R
+    echo "  -i    Open Shiny app in GUI (default is to open in browser). 
+        Note that some GUIs (e.g. VSCode) will ignore this flag." # ...this is read by app.R
 }
-
-shift $((OPTIND-1))
 
 # Parse command line options
 
-while getopts "hvspaAg" opt; do
+while getopts "hvspaAgi" opt; do
     case "$opt" in
     h) 
         show_help
@@ -39,7 +42,8 @@ while getopts "hvspaAg" opt; do
     p) run_in_parallel=true ;; # ...flag to run scripts in parallel
     a) ;; # ...recognise flag but do nothing (since it's for preprocess.sh)
     A) ;; # ...recognise flag but do nothing (since it's for preprocess.sh)
-    g) ;; # ...recognise flag but do nothing (since it's for visualisations.R)
+    g) save_svg=true ;; # ...flag to save static visualisations in SVG format
+    i) shiny_gui=true ;; # ...flag to open Shiny app in GUI rather than browser
     *)
         echo "...that's a red flag!" 
         echo "Your specified flag is not recognised. The available flags are as follows:"
@@ -49,12 +53,31 @@ while getopts "hvspaAg" opt; do
     esac
 done
 
-# Check for conflicting flags
+#shift $((OPTIND-1))
+
+# Check for conflict: -p with -s or -v
 if $run_in_parallel; then
     if $skip_visualisations || $skip_shiny_app; then
         echo "Error: The -p flag cannot be used with -s or -v."
-        echo "Error: -p with -s or -v? Oh sure, let's run fast and skip everything. Makes perfect sense ;)"
-        echo "Error: -p alongside -s or -v? Next, we'll be running marathons in flip-flops..."
+        echo "Run "./jobscript.sh -h" for more information."
+        exit 1
+    fi
+fi
+
+# Check for conflict: -g with -v
+if $skip_visualisations; then
+    if $save_svg; then
+        echo "Error: The -g flag cannot be used with -v."
+        echo "Run "./jobscript.sh -h" for more information."
+        exit 1
+    fi
+fi
+
+# Check for conflict: -i with -s
+if $skip_shiny_app; then
+    if $shiny_gui; then
+        echo "Error: The -i flag cannot be used with -s."
+        echo "Run './jobscript.sh -h' for more information."
         exit 1
     fi
 fi
@@ -87,7 +110,7 @@ run_visualisations() {
 # Function to run Shiny app script
 run_shiny_app() {
     echo "RUNNING SHINY APP SCRIPT..."
-    Rscript app.R || { echo "Failed to run Shiny app script."; exit 1; }
+    Rscript app.R "$@" # ...no error handling because Shiny app may still run even if there's an error
 }
 
 
@@ -119,8 +142,18 @@ fi
 
 echo "All scripts run!"
 
+echo ""
 echo "Please check the 'clean' directory for the cleaned and merged dataset."
+
+# ...visualisations completion message only if not skipped
 
 if ! $skip_visualisations; then
     echo "Please check the 'visualisations' directory for the visualisations."
+fi
+
+
+# ...Shiny app completion message only if not skipped
+if ! $skip_shiny_app; then
+    echo ""
+    echo "If your Shiny app hasn't automatically launched, please check your browser or GUI settings."
 fi

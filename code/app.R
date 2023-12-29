@@ -1,6 +1,6 @@
 # Run required libraries
 
-renv::restore() # ...restore packages from renv lock file
+renv::restore() # ...restore packages from renv.lock
 
 library(shinydashboard)
 library(ggplot2)
@@ -9,6 +9,15 @@ library(shinyWidgets)
 library(DT)
 library(here)
 library(shiny)
+
+# Read command-line flags
+
+args <- commandArgs(trailingOnly = TRUE)
+
+
+# Read dataframe
+
+shiny_df <- readRDS(here::here("../clean", "data.rds"))
 
 
 # Set colours for plotting
@@ -43,9 +52,7 @@ cb_col8 <- "#363537"
 cb_colour_palette <- c(cb_col1, cb_col2, cb_col3, cb_col4, cb_col5, cb_col6,
                        cb_col7, cb_col8)
 
-# Read data frame
 
-shiny_df <- readRDS(here::here("../clean", "data.rds"))
 
 # ---------------------------------- UI ---------------------------------------
 
@@ -135,7 +142,7 @@ ui <- dashboardPage(
       # Information box for variables
       tabBox(
         title = "Variable guide",
-        id = "tabset1", height = "350px", width = 6,
+        id = "tabset1", height = "400px", width = 6,
         # Using HTML for better text formatting
         tabPanel("Indices", 
                  HTML("The NHANES survey contained a simple scoring system for food consumption:
@@ -396,5 +403,26 @@ server <- function(input, output, session) {
 
 # ------------------------------- RUN APP -------------------------------------
 
-shinyApp(ui, server, options = list(
-  launch.browser = TRUE)) # ...force browser launch instead of GUI window
+# Running app based on flags
+
+
+if("-i" %in% args) {
+  
+  print("Trying to run app in the GUI...")
+  print("Press Ctrl + C // Cmd + C when finished")
+  
+  print(shinyApp(ui, server, options = list(
+    launch.browser = FALSE # ...enable GUI launch
+  )))
+  
+} else {
+  
+  print("Trying to run app in the browser...")
+  print("If your app hasn't automatically launched, please copy and paste the local URL to your browser.")
+  print("You can find the local URL in the below output. It may look something like http://127.0.0.1:1234")
+  print("Press Ctrl + C // Cmd + C when finished")
+  
+  shinyApp(ui, server, options = list(
+    launch.browser = TRUE # ...force browser launch instead of GUI window
+  ))
+}
