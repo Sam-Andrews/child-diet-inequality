@@ -10,15 +10,21 @@ skip_shiny_app=false
 run_in_parallel=false
 save_svg=false
 shiny_gui=false
+keep_fields=false
 
 # Function to display help via `./jobscript.sh -h`
 
 show_help() {
-    echo "Usage: $0 [-h -v -s -a -A -p -g -i]"
+    echo "Usage: $0 [-h -v -s -d -a -A -p -g -i]"
+    echo ""
+    echo "For more information about these flags, please see README_code.md."
+    echo ""
     echo "Options:"
     echo "  -h    Display help"    
-    echo "  -v    Skip static visualisations script"
-    echo "  -s    Skip Shiny app script"
+    echo "  -v    Skip static visualisations script (visualisations.R)"
+    echo "  -s    Skip Shiny app script (app.R)"
+    echo "  -d    Keep food consumption fields in cleaned dataset.
+        Default is to only keep fields needed for visualisations.R and app.R scripts  "
     echo "  -a    Set minimum age (default is -a 0 for 0 years old). 
         Ensure there's a space between '-a' and your chosen age."  # ...this is read by preprocess.sh
     echo "  -A    Set maximum age (default is -A 12 for 12 years old). 
@@ -26,12 +32,12 @@ show_help() {
     echo "  -p    Run visualisations.R and Shiny app.R scripts in parallel (default is to run sequentially)"
     echo "  -g    Save static visualisations in SVG format (default is PNG). This is ideal for publishing." # ...this is read by visualisations.R
     echo "  -i    Open Shiny app in GUI (default is to open in browser). 
-        Note that some GUIs (e.g. VSCode) will ignore this flag." # ...this is read by app.R
+        Note that some GUIs (e.g. VSCode) may ignore this flag." # ...this is read by app.R
 }
 
 # Parse command line options
 
-while getopts "hvspaAgi" opt; do
+while getopts "hvspaAgid" opt; do
     case "$opt" in
     h) 
         show_help
@@ -44,6 +50,7 @@ while getopts "hvspaAgi" opt; do
     A) ;; # ...recognise flag but do nothing (since it's for preprocess.sh)
     g) save_svg=true ;; # ...flag to save static visualisations in SVG format
     i) shiny_gui=true ;; # ...flag to open Shiny app in GUI rather than browser
+    d) keep_fields=true ;; # ...flag to keep food consumption fields in cleaned dataset
     *)
         echo "...that's a red flag!" 
         echo "Your specified flag is not recognised. The available flags are as follows:"
@@ -97,7 +104,7 @@ bash preprocess.sh "$@" || { echo "Failed to run data processing script."; exit 
 # Run data wrangling script
 
 echo "RUNNING DATA WRANGLING SCRIPT..."
-Rscript data_wrangling.R || { echo "Failed to run data wrangling script."; exit 1; }
+Rscript data_wrangling.R "$@" || { echo "Failed to run data wrangling script."; exit 1; }
 
 
 # Function to run data visualisation script
@@ -143,7 +150,7 @@ fi
 echo "All scripts run!"
 
 echo ""
-echo "Please check the 'clean' directory for the cleaned and merged dataset."
+echo "Please check the 'clean' directory for the cleaned study dataset."
 
 # ...visualisations completion message only if not skipped
 

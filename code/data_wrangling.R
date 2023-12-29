@@ -20,9 +20,11 @@ library(here) # ...for relative path file management
 library(dplyr) # ...for data wrangling
 library(tidyr) # ...for data manipulation
 
-# for here() function, directory is child-diet-inequality/code
 
-# ----------------------------------------------------------------------------
+# Read command-line flags
+
+args <- commandArgs(trailingOnly = TRUE)
+
 
 ## Read merged dataset
 
@@ -235,12 +237,6 @@ extreme_sugar <- function(data, start_col_name, end_col_name, name_prefix) {
 df <- extreme_sugar(df, "FFQ0112", "FFQ0120", "sugar")
 
 
-# ----------------------------------------------------------------------------
-
-## Output file to `clean` directory
-
-write.csv(df, file = here::here("../clean", "clean_data.csv"))
-
 
 # ----------------------------------------------------------------------------
 
@@ -270,6 +266,28 @@ new_shiny <- shiny_df[, 69:79]
 saveRDS(new_shiny, file = here::here("../clean", "data.rds"))
 
 print("Data wrangling script fully executed.")
+
+
+# ----------------------------------------------------------------------------
+
+# Save cleaned 'study dataset' in the `clean/` directory based off flags
+
+if("-d" %in% args) {
+  
+  print("Saving full dataset to `clean/` directory")
+  
+  write.csv(df, file = here::here("../clean", "clean_data.csv"))
+  
+} else {
+  
+  print("Saving trimmed dataset to `clean/` directory")
+  
+  df <- df %>%
+    dplyr::select(SEQN, RIAGENDR, RIDAGEYR, RIDRETH1, DMDHHSIZ, INDHHINC,
+                  fruit_index, veg_index, sugar_index, fruit_1:sugar_11)
+  
+  write.csv(df, file = here::here("../clean", "clean_data.csv"))
+}
 
 # ----------------------------------------------------------------------------
 #                               END OF SCRIPT

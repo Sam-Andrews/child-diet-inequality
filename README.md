@@ -8,7 +8,7 @@ It has a number of key features, including:
 * Two static data visualisations for each of these variables.
 * An interactive Shiny dashboard, allowing the user to filter the data to identify vulnerable groups.
 
-For a detailed overview of this pipeline's scripts, stages and customisation options, see `code/README_code.md`.
+For a detailed overview of this pipeline's scripts, stages and customisation options, see [`code/README_code.md`](https://github.com/Sam-Andrews/child-diet-inequality/blob/main/code/README_code.md).
 
 
 ## Getting started
