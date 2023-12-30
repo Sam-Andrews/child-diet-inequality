@@ -29,8 +29,6 @@ For example, this line would not produce any static visualisations, but will inc
 ./jobscript.sh -v -a 6 -A 18
 ```
 
-Additionally, the `BMI.csv` data has been included should further researchers wish to modify the scripts to include this data.
-
 ## Other files
 
 This directory contains a number of other files that are not directly called by the job script, but are otherwise necessary for the other scripts to run. These include:
