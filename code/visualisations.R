@@ -108,8 +108,9 @@ print("Creating second static data visualisation")
 # Pivot longer' to aggregate groups and calculate proportions for each category
 
 clean_df_long <- clean_df %>%
-  select(fruit_1:fruit_4, veg_1:veg_4, sugar_8:sugar_11) %>%
-  pivot_longer(cols = everything(), names_to = "variable", values_to = "response") %>%
+  select(fruit_1:fruit_4, veg_1:veg_4, sugar_9:sugar_11) %>%
+  pivot_longer(cols = everything(), names_to = "variable", 
+               values_to = "response") %>%
   group_by(variable) %>%
   summarise(Yes_count = sum(response == "Yes", na.rm = TRUE), 
             Total_count = n()) %>%
@@ -123,7 +124,7 @@ frequency_labels <- c("Never",
                       "2-3 times per month")
 
 # Sugar frequency labels
-sugar_frequency_labels <- c("3-4 times per week", 
+sugar_frequency_labels <- c(
                             "5-6 times per week", 
                             "1 time per day",
                             "2 or more times per day")
@@ -132,7 +133,7 @@ sugar_frequency_labels <- c("3-4 times per week",
 clean_df_long$freq_label <- case_when(
   str_detect(clean_df_long$variable, "fruit") ~ factor(frequency_labels[match(gsub("\\D+", "", clean_df_long$variable), 1:4)], levels = frequency_labels),
   str_detect(clean_df_long$variable, "veg") ~ factor(frequency_labels[match(gsub("\\D+", "", clean_df_long$variable), 1:4)], levels = frequency_labels),
-  str_detect(clean_df_long$variable, "sugar") ~ factor(sugar_frequency_labels[match(gsub("\\D+", "", clean_df_long$variable), 8:11)], levels = sugar_frequency_labels)
+  str_detect(clean_df_long$variable, "sugar") ~ factor(sugar_frequency_labels[match(gsub("\\D+", "", clean_df_long$variable), 9:11)], levels = sugar_frequency_labels)
 )
 
 # Determine the type based on the variable name
