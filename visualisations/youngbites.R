@@ -221,9 +221,9 @@ server <- function(input, output, session) {
   
   output$fruitBox <- renderValueBox({
     # Calculate the average fruit index
-    avg_fruit <- round(mean(shiny_df$`the fruit index`, na.rm = TRUE), digits = 2)
+    avg_fruit <- round(median(shiny_df$`the fruit index`, na.rm = TRUE), digits = 2)
     valueBox(
-      avg_fruit, "...average fruit index", icon = icon("fa-sharp fa-solid fa-lemon", lib = "font-awesome"),
+      avg_fruit, "...median fruit index", icon = icon("fa-sharp fa-solid fa-lemon", lib = "font-awesome"),
       color = # ...color argument depends on colourblindness setting
         if(input$Id018 != TRUE) {
           "yellow"
@@ -236,9 +236,9 @@ server <- function(input, output, session) {
   
   output$vegBox <- renderValueBox({
     # Calculate the average veg index
-    avg_veg <- round(mean(shiny_df$`the vegetable index`, na.rm = TRUE), digits = 2)
+    avg_veg <- round(median(shiny_df$`the vegetable index`, na.rm = TRUE), digits = 2)
     valueBox(
-      avg_veg, "...average vegetable index", icon = icon("fa-sharp fa-solid fa-carrot", lib = "font-awesome"),
+      avg_veg, "...median vegetable index", icon = icon("fa-sharp fa-solid fa-carrot", lib = "font-awesome"),
       color = # ...color argument depends on colourblindness setting
         if(input$Id018 != TRUE) {
           "red"
@@ -252,9 +252,9 @@ server <- function(input, output, session) {
   
   output$sugarBox <- renderValueBox({
     # Calculate the average sugar index
-    avg_sugar <- round(mean(shiny_df$`the sugar index`, na.rm = TRUE), digits = 2)
+    avg_sugar <- round(median(shiny_df$`the sugar index`, na.rm = TRUE), digits = 2)
     valueBox(
-      avg_sugar, "...average sugar index", icon = icon("fa-sharp fa-solid fa-cubes-stacked", lib = "font-awesome"),
+      avg_sugar, "...median sugar index", icon = icon("fa-sharp fa-solid fa-cubes-stacked", lib = "font-awesome"),
       color = # ...color argument depends on colourblindness setting
         if(input$Id018 != TRUE) {
           "purple"
@@ -328,8 +328,8 @@ server <- function(input, output, session) {
       
       # For continuous outcomeVar, display the mean for the index
       p <- p + 
-        geom_bar(stat = "summary", fun = "mean", position = position_dodge(width = 0.9)) +
-        labs(y = "Mean Index Score", x = input$compareVar) +
+        geom_bar(stat = "summary", fun = "median", position = position_dodge(width = 0.9)) +
+        labs(y = "Median Index Score", x = input$compareVar) +
         theme_bw() +
         # ...to avoid overlapping x axis text:
         theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
@@ -362,7 +362,7 @@ server <- function(input, output, session) {
       group_vars <- rlang::syms(c(input$compareVar, if (!is.null(dodgeVar)) input$dodgeVar))
       data_summary <- data %>%
         dplyr::group_by(!!!group_vars) %>%
-        dplyr::summarise(Mean = round(mean(.data[[input$outcomeVar]], na.rm = TRUE), 1),
+        dplyr::summarise(Median = round(median(.data[[input$outcomeVar]], na.rm = TRUE), 1),
                          Count = n(),
                          .groups = 'drop')
     }
