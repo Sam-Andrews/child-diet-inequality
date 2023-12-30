@@ -1,7 +1,7 @@
 # Young Bites, Big Questions: Unpacking Diet and Disparity among US Children
 
 ## Overview
-This project uses NHANES data to analyse dietary consumption in early and middle childhood (ages 12 and under). It examines the prevelence and correlates of unhealthy consumption frequency.
+This project uses NHANES data to analyse dietary consumption in early and middle childhood (ages 12 and under).
 
 It has a number of key features, including:
 * Creation of two derived variables: _"index scores"_ and _"unhealthy consumption signifiers"_ for fruit, vegetable and sugary item consumption.
