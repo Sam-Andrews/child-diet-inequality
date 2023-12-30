@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 
 # Parse command line options
-
-
 # ...set default values if not specified
 min_age=0
 max_age=12
@@ -18,7 +16,7 @@ done
 # Set directory to where raw data is stored
 cd ../raw
 
-# Function to filter columns
+# Function to filter columns - [to remove from script!]
 filter_columns() {
     local input_file=$1
     local output_file=$2
@@ -28,12 +26,12 @@ filter_columns() {
     echo "...Complete."
 }
 
-# Function to sort file
+# Function to sort file by unique identifier
 sort_file() {
     local input_file=$1
     local output_file=$2
     echo "Sorting $input_file..."
-    sort -k1,1 $input_file > $output_file
+    sort -k1,1 $input_file > $output_file # ...assumes unique identifier is first column
     echo "...Complete."
 }
 
@@ -61,7 +59,8 @@ filter_by_age() {
     head -1 $input_file > $output_file
 
     # Filter the data, skipping the header
-    awk -F',' -v min="$min" -v max="$max" 'NR>1 && ($4 >= min && $4 <= max)' $input_file >> $output_file
+    # ...assumes 'age in years' is located in Column 6
+    awk -F',' -v min="$min" -v max="$max" 'NR>1 && ($6 >= min && $6 <= max)' $input_file >> $output_file
 
     echo "...Complete."
 }
@@ -97,17 +96,15 @@ recode_missing_values() {
 ## Main script
 
 # Filter columns
-filter_columns DEMO_D.csv DEMO_D_cut.csv "1,5-7,9,11,12,14,16,18,20"
-filter_columns FFQRAW_D.csv FFQRAW_D_cut.csv "1,34-39,42,43,46,49,52,55,56-63,66-72,75,78,79,81,93,176,178-182,184,186,187"
+#filter_columns DEMO_D.csv DEMO_D_cut.csv "1,5-7,9,11,12,14,16,18,20"
+#filter_columns FFQRAW_D.csv FFQRAW_D_cut.csv "1,34-39,42,43,46,49,52,55,56-63,66-72,75,78,79,81,93,176,178-182,184,186,187"
 
 # Sort files
-sort_file BMI.csv BMI_sorted.csv
-sort_file DEMO_D_cut.csv DEMO_D_sorted.csv
-sort_file FFQRAW_D_cut.csv FFQRAW_D_sorted.csv
+sort_file DEMO_D.csv DEMO_D_sorted.csv
+sort_file FFQRAW_D.csv FFQRAW_D_sorted.csv
 
 # Join files
-join_files BMI_sorted.csv DEMO_D_sorted.csv first_join.csv
-join_files first_join.csv FFQRAW_D_sorted.csv merged_unclean.csv
+join_files DEMO_D_sorted.csv FFQRAW_D_sorted.csv merged_unclean.csv
 
 # Filter by age
 filter_by_age merged_unclean.csv merged_age.csv
@@ -121,7 +118,7 @@ remove_trailing_whitespace merged_dup.csv merged_ws.csv
 # Recode missing values
 recode_missing_values merged_ws.csv merged.csv
 
-# Clean up temporary files
+# Remove temporary files
 echo "Removing temporary files..."
-rm first_join.csv BMI_sorted.csv DEMO_D_sorted.csv merged_unclean.csv FFQRAW_D_sorted.csv merged_age.csv merged_dup.csv merged_ws.csv header.csv DEMO_D_cut.csv FFQRAW_D_cut.csv
+rm DEMO_D_sorted.csv FFQRAW_D_sorted.csv merged_unclean.csv merged_age.csv merged_dup.csv merged_ws.csv header.csv
 echo "...Complete."

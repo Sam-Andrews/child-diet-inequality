@@ -1,15 +1,17 @@
 # This script reads our merged dataset and performs the following wrangling
 # tasks:
 #
-# Index creation:
+# *Index creation:
 # ... fruit consumption index
 # ... vegetable consumption index
 # ... processed sugar consumption index
 #
-# Creating dummy variables signifying whether respondent consumed fruit, veg
+# *Creating dummy variables signifying whether respondent consumed fruit, veg
 # and sugar at each response level
 #
-# Saving the cleaned study dataset in the `clean/` directory
+# *Removing volumns
+#
+# *Saving the cleaned study dataset in the `clean/` directory
 
 # ----------------------------------------------------------------------------
 
@@ -42,12 +44,85 @@ suppressMessages({ # ...removes clutter in the terminal (doesn't hide errors)
 args <- commandArgs(trailingOnly = TRUE)
 
 
-## Read merged dataset
+# Read merged dataset
 
 df <- read.csv(here::here("../raw", # ...file path to dataset
                           "merged.csv"), # ...dataset name
                header = TRUE, # ...read first row as header
                na.strings = "NA") # ...sets "NA" string to missing/NA
+
+
+# ----------------------------------------------------------------------------
+
+# Filter for only required columns
+# ...this is to save computation resources for the remainder of this pipeline
+
+print("Filtering variables...")
+
+# You can modify the below to include additional variables as required
+
+df <- df %>%
+  dplyr::select(
+    
+    SEQN, # ...unique identifer
+    
+    # Socio-economic variables:
+    
+    RIAGENDR, # ...gender
+    RIDAGEYR, # ...age in years
+    RIDAGEMN, # ...age in months (needed for internal validation)
+    DMDHHSIZ, # ...household size
+    INDHHINC, # ...household income
+    RIDRETH1, # ...ethnicity
+    
+    # Fruit:
+
+    FFQ0016, # ...apples
+    FFQ0017, # ...pears
+    FFQ0018, # ...bananas
+    FFQ0019, # ...pineapples
+    FFQ0020, # ...dried fruit
+    FFQ0022, # ...grapes
+    FFQ0027, # ...any other fruit
+    
+    # Vegetables:
+    
+    FFQ0028, # ...cooked greens
+    FFQ0029, # ...raw greens
+    FFQ0030, # ...coleslaw
+    FFQ0031, # ...sauerkraut
+    FFQ0032, # ...carrots
+    FFQ0033, # ...string beans
+    FFQ0034, # ...peas
+    FFQ0036, # ...broccoli
+    FFQ0037, # ...cauliflower
+    FFQ0038, # ...mixed veg
+    FFQ0039, # ...onions
+    FFQ0040, # ...peppers
+    FFQ0041, # ...cucumbers
+    FFQ0044, # ...lettuce salad
+    FFQ0046, # ...sweet potatoes
+    FFQ0056, # ...cooked dried beans
+    FFQ0057, # ...any other vegetable
+    
+    # High-sugar items:
+    
+    FFQ0059, # ...pancakes
+    FFQ0101, # ...biscuits
+    FFQ0104, # ...popcorn
+    FFQ0112, # ...ice cream
+    FFQ0113, # ...pudding
+    FFQ0114, # ...cake
+    FFQ0115, # ...cookies
+    FFQ0116, # ...doughnuts
+    FFQ0117, # ...sweet muffins
+    FFQ0118, # ...fruit crisp (i.e. fruit crumble)
+    FFQ0119, # ...pie
+    FFQ0120, # ...chocolate
+    FFQ0121 # ...other candy
+  )
+
+
 
 # ----------------------------------------------------------------------------
 
@@ -57,154 +132,86 @@ print("Conducting internal validation checks...")
 
 nrow_df1 <- nrow(df)
 
-# ...check that 'age in months' is in line with 'age in years
+# Check that 'age in months' is in line with 'age in years'
+
 df_age <- df %>%
   dplyr::mutate(RIDAGEMN_yr = RIDAGEMN / 12) %>% # ...divide age in months by 12
-  dplyr::filter(abs(RIDAGEYR - RIDAGEMN_yr) < 1) %>% # ...filter out cases
+  # ...filter out cases where the absolute difference is no greater than 1
+  dplyr::filter(abs(RIDAGEYR - RIDAGEMN_yr) < 1) %>%
   select(-RIDAGEMN, -RIDAGEMN_yr) # ...remove unneeded variables
 
 
-# ...filter out cases with more than 10% missing data
+# Filter out cases with 25% or more missing data
+
 df_missing <- df_age %>%
   # ...add new column that calculates the proportion of missing values per row
   mutate(prop_missing = rowSums(is.na(.)) / ncol(.)) %>%
   # ...filter out rows where the proportion of missing values > 10%
-  filter(prop_missing <= 0.10) %>%
+  filter(prop_missing <= 0.25) %>%
   # ...remove unneeded variable
   select(-prop_missing)
 
 
-nrow_df2 <- nrow(df_age)
+nrow_df2 <- nrow(df_missing)
 
 
 print(paste0("...Number of cases lost due to interval validation: ", 
              nrow_df1 - nrow_df2))
 
+# Make validated responses the new 'df'
 
 df <- df_missing
 
-# ----------------------------------------------------------------------------
-
-# Recode variables with more intuitive values
-# Treat them as factors for plot ordering purposes.
-
-print("Recoding variables...")
-
-# Gender
-# ...this is more appropriately a 'sex' variable; no gender-spectrum identities
-#    were recorded.
-
-df <- df %>%
-  dplyr::mutate(RIAGENDR = factor(case_when(
-    RIAGENDR == 1 ~ "Male",
-    RIAGENDR == 2 ~ "Female"
-  ), levels = c("Male", "Female")))
-
-# Ethnicity
-# ...combining some groups due to small subsamples
-
-df <- df %>%
-  dplyr::mutate(RIDRETH1 = factor(case_when(
-    RIDRETH1 == 1 ~ "Mexican American",
-    RIDRETH1 == 2 ~ "Other",
-    RIDRETH1 == 3 ~ "White American",
-    RIDRETH1 == 4 ~ "Black American",
-    RIDRETH1 == 5 ~ "Other"
-  ), levels = c("Mexican American", "Other Hispanic", "White American", 
-                "Black American", "Other")))
-
-
-# Household income
-# ...combining groups due to small subsamples
-
-df <- df %>%
-  dplyr::mutate(INDHHINC = factor(case_when(
-    INDHHINC == 1  ~ "Under $15,000",
-    INDHHINC == 2  ~ "Under $15,000",
-    INDHHINC == 3  ~ "Under $15,000",
-    INDHHINC == 4  ~ "$15,000-$24,999",
-    INDHHINC == 5  ~ "$15,000-$24,999",
-    INDHHINC == 6  ~ "$25,000-$44,999",
-    INDHHINC == 7  ~ "$25,000-$44,999",
-    INDHHINC == 8  ~ "$45,000-$64,999",
-    INDHHINC == 9  ~ "$45,000-$64,999",
-    INDHHINC == 10 ~ "$65,000+",
-    INDHHINC == 11 ~ "$65,000+"
-  ), levels = c("Under $15,000", "$15,000-$24,999", "$25,000-$44,999",
-                "$45,000-$64,999", "$65,000+")))
-
-
-# Age groups
-
-df <- df %>%
-  dplyr::mutate(RIDAGEYR = factor(case_when(
-    RIDAGEYR <= 4 ~ "4 and under",
-    RIDAGEYR > 4 & RIDAGEYR <= 8 ~ "5 to 8",
-    # ...need upper age cut-off in case user configures different age cut-offs
-    #    in the command line:
-    RIDAGEYR > 8 & RIDAGEYR < 13 ~ "9 and above"
-  ), levels = c("4 and under", "5 to 8", "9 and above")))
-
-
-
-# Household size
-# ...combining groups due to small subsamples
-
-df <- df %>%
-  dplyr::mutate(DMDHHSIZ = factor(case_when(
-    DMDHHSIZ == 1 | DMDHHSIZ == 2 | DMDHHSIZ == 3 ~ "1 to 3 members",
-    DMDHHSIZ == 4 | DMDHHSIZ == 5 ~ "4 to 5 members",
-    DMDHHSIZ == 6 | DMDHHSIZ == 7 ~ "6+ members"),
-    levels = c("1 to 3 members",
-               "4 to 5 members",
-               "6+ members")))
-
 
 # ----------------------------------------------------------------------------
-# Function to produce index for a given range of columns
+
+# Produce derived variables
 
 print("Constructing derived variables...")
 
+# Function to produce an index for a given range of columns
+
 make_index <- function(data, start_col, end_col) {
   
-  # Find the indices of the start and end columns
+  # ...locate start and end columns
   cols_indices <- which(names(data) %in% c(start_col, end_col))
   
-  # Check if both columns are found
+  # ...check if both columns are found
   if (length(cols_indices) != 2) {
     stop("Start or end column not found in the data frame.
          Make sure you've specified the correct data frame, start column,
          and end column.")
   }
   
-  # Create a range of column names
+  # ...create a range of column names
   cols_range <- names(data)[min(cols_indices):max(cols_indices)]
   
-  # Use dplyr to calculate the mean of non-NA values across the specified columns
+  # Use ...ccalculate the mean of non-NA values across the specified columns
   data %>%
     rowwise() %>%
-    mutate(mean_value = mean(c_across(all_of(cols_range)), na.rm = TRUE)) %>%
-    ungroup() %>%
+    dplyr::mutate(mean_value = mean(c_across(all_of(cols_range)), na.rm = TRUE)) %>%
+    dplyr::ungroup() %>%
     pull(mean_value)
 }
+
 
 # Call function for each of our column ranges
 
 df$fruit_index <- make_index(df, "FFQ0016", "FFQ0027") # ...fruit index
 df$veg_index <- make_index(df, "FFQ0028", "FFQ0057") # ...veg index
-df$sugar_index <- make_index(df, "FFQ0112", "FFQ0120") # ...sugar index
+df$sugar_index <- make_index(df, "FFQ0059", "FFQ0121") # ...sugar index
 
 
-# Below converts any `NaN` to `NA`. This stage is required for the Shiny app.
+# Convert any `NaN` to `NA`. This is required for the Shiny app.
 
 df[] <- lapply(df, function(x) { if(is.numeric(x)) { 
   x[is.nan(x)] <- NA }; return(x) })
 
 
-# ----------------------------------------------------------------------------
 
-## Create indicator of whether respondent consumes anything at each response 
-## level for each of fruit, vegetable, and sugar variables.
+
+# Create indicator of whether respondent consumes anything at each response 
+# level for each of fruit, vegetable, and sugar variables.
 
 # First, the function for fruit and veg
 
@@ -229,15 +236,16 @@ df <- any_fruitveg(df, "FFQ0016", "FFQ0027", "fruit")
 df <- any_fruitveg(df, "FFQ0028", "FFQ0057", "veg")
 
 
-## Now a similar function for sugar consumption
+# Now, a similar function for sugar consumption
 
 extreme_sugar <- function(data, start_col_name, end_col_name, name_prefix) {
   cols_range <- which(names(data) %in% c(start_col_name, end_col_name))
   data_slice <- data[, min(cols_range):max(cols_range)]
   
-  for (limit in 8:11) {
-    var_name <- paste0(name_prefix, "_", limit)
-    data[[var_name]] <- apply(data_slice, 1, function(x) any(x >= limit, na.rm = TRUE))
+  for (i in 8:11) {
+    var_name <- paste0(name_prefix, "_", i)
+    data[[var_name]] <- apply(data_slice, 1, function(x) any(x >= i, 
+                                                             na.rm = TRUE))
     data[[var_name]] <- factor(ifelse(data[[var_name]], "Yes", "No"))
   }
   
@@ -247,59 +255,139 @@ extreme_sugar <- function(data, start_col_name, end_col_name, name_prefix) {
 
 # Apply function to sugar variables
 
-df <- extreme_sugar(df, "FFQ0112", "FFQ0120", "sugar")
+df <- extreme_sugar(df, "FFQ0059", "FFQ0121", "sugar")
 
 
 # ----------------------------------------------------------------------------
 
-## Produce dedicated data frame for Shiny app
-
-print("Producing clean dataset...")
-
-# Set 'natural language' names for variables (backticks allow for space chars)
-
-shiny_df <- df %>%
-  dplyr::mutate(`gender` = RIAGENDR,
-                `age` = RIDAGEYR,
-                `ethnicity` = RIDRETH1,
-                `annual household income` = INDHHINC,
-                `size of household` = DMDHHSIZ,
-                `the fruit index` = fruit_index,
-                `the vegetable index` = veg_index,
-                `the sugar index` = sugar_index,
-                `low fruit consumption` = fruit_4,
-                `low vegetable consumption` = veg_4,
-                `high sugar consumption` = sugar_9)
-
-
-# Select only required variables for Shiny app
-# ...this is important for app performance
-
-new_shiny <- shiny_df %>%
-  dplyr::select(fruit_index:`high sugar consumption`)
-
-saveRDS(new_shiny, file = here::here("../clean", "data.rds"))
-
-print("Data wrangling script fully executed.")
-
-
-# ----------------------------------------------------------------------------
-
-# Save cleaned 'study dataset' in the `clean/`
-# ...user-set flags determine which fields are saved
+# Food consumption columns are no longer needed. Drop them, unless user
+# specifies otherwise via command-line flag
 
 if("-d" %in% args) {
-  print("Saving full dataset to `clean/` directory")
-  write.csv(df, file = here::here("../clean", "clean_data.csv"))
+  print("Keeping unrequired fields as per user request...")
   
 } else {
-  print("Saving trimmed dataset to `clean/` directory")
+  print("Removing unrequired fields...")
   df <- df %>%
     dplyr::select(SEQN, RIAGENDR, RIDAGEYR, RIDRETH1, DMDHHSIZ, INDHHINC,
                   fruit_index, veg_index, sugar_index, fruit_1:sugar_11)
-  
-  write.csv(df, file = here::here("../clean", "clean_data.csv"))
 }
 
+# ----------------------------------------------------------------------------
+
+# Recode variables with more intuitive values
+# ...treat them as factors for plot ordering purposes.
+# ...specify levels to determine plot order
+
+print("Recoding variables...")
+
+# Gender
+
+df <- df %>%
+  dplyr::mutate(RIAGENDR = factor(case_when(
+    RIAGENDR == 1                                        ~ "Male",
+    RIAGENDR == 2                                        ~ "Female"
+    
+  ), levels = c("Male", "Female")))
+
+
+# Ethnicity
+# ...combining some groups due to small subsamples
+
+df <- df %>%
+  dplyr::mutate(RIDRETH1 = factor(case_when(
+    RIDRETH1 == 1                                        ~ "Mexican American",
+    RIDRETH1 == 2                                        ~ "Other",
+    RIDRETH1 == 3                                        ~ "White American",
+    RIDRETH1 == 4                                        ~ "Black American",
+    RIDRETH1 == 5                                        ~ "Other"
+    
+  ), levels = c("Mexican American", "White American", 
+                "Black American", "Other")))
+
+
+# Household income
+# ...combining groups due to small subsamples
+
+df <- df %>%
+  dplyr::mutate(INDHHINC = factor(case_when(
+    INDHHINC == 1  | INDHHINC == 2 | INDHHINC == 3       ~ "Under $15,000",
+    INDHHINC == 4  | INDHHINC == 5                       ~ "$15,000-$24,999",
+    INDHHINC == 6  | INDHHINC == 7                       ~ "$25,000-$44,999",
+    INDHHINC == 8  | INDHHINC == 9                       ~ "$45,000-$64,999",
+    INDHHINC == 10 | INDHHINC == 11                      ~ "$65,000+"
+    
+  ), levels = c("Under $15,000", "$15,000-$24,999", "$25,000-$44,999",
+                "$45,000-$64,999", "$65,000+")))
+
+
+# Age groups
+
+df <- df %>%
+  dplyr::mutate(RIDAGEYR = factor(case_when(
+    RIDAGEYR <= 4                                        ~ "4 and under",
+    RIDAGEYR > 4 & RIDAGEYR <= 8                         ~ "5 to 8",
+    # ...need upper age limit in case user configures different age
+    #    cut-offs in the command line
+    RIDAGEYR > 8 & RIDAGEYR < 13                         ~ "9 and above"
+    
+  ), levels = c("4 and under", "5 to 8", "9 and above")))
+
+
+
+# Household size
+# ...combining groups due to small subsamples
+
+df <- df %>%
+  dplyr::mutate(DMDHHSIZ = factor(case_when(
+    DMDHHSIZ == 1 | DMDHHSIZ == 2 | DMDHHSIZ == 3        ~ "1 to 3 members",
+    DMDHHSIZ == 4 | DMDHHSIZ == 5                        ~ "4 to 5 members",
+    DMDHHSIZ == 6 | DMDHHSIZ == 7                        ~ "6+ members"
+    
+  ), levels = c("1 to 3 members", "4 to 5 members", "6+ members")))
+
+
+# ----------------------------------------------------------------------------
+
+# Produce dedicated data frame for Shiny app
+# ...this is to preserve factor levels and place space characters in column
+#    names (so that the columns are in 'natural language' in the Shiny app)
+
+# This section will be skipped if user skips youngbites.R script via the
+# command line
+
+if("-s" %in% args) {
+  print("Skipping Shiny-optimised data frame...")
+  
+} else {
+  print("Creating Shiny-optimised data frame...")
+  shiny_df <- df %>%
+    # Set 'natural language' variable names (backticks allow for space chars)
+    dplyr::mutate(`gender` = RIAGENDR,
+                  `age` = RIDAGEYR,
+                  `ethnicity` = RIDRETH1,
+                  `annual household income` = INDHHINC,
+                  `size of household` = DMDHHSIZ,
+                  `the fruit index` = fruit_index,
+                  `the vegetable index` = veg_index,
+                  `the sugar index` = sugar_index,
+                  `low fruit consumption` = fruit_4,
+                  `low vegetable consumption` = veg_4,
+                  `high sugar consumption` = sugar_9)
+  saveRDS(shiny_df, file = here::here("../clean", "data.rds"))
+}
+
+
+# ----------------------------------------------------------------------------
+
+# Save final study dataset in the `clean/` directory
+
+print("Producing clean study dataset...")
+
+write.csv(df, file = here("../clean", "clean_data.csv"))
+
+
+
+print("Data wrangling script fully executed.")
 # -----------------------------------------------------------------------------
 #                               END OF SCRIPT

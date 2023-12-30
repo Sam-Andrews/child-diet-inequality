@@ -142,10 +142,12 @@ else
     fi
 fi
 
-# Delete Shiny-specific data
+# Delete Shiny-specific data unless -s flag is used
 
-rm ../clean/data.rds
-
+if ! $skip_shiny_app; then
+echo "Removing shiny-specific data frame..."
+    rm ../clean/data.rds
+fi
 
 # All scripts run
 
