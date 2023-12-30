@@ -24,7 +24,7 @@ suppressMessages({ # ...removes clutter in the terminal (doesn't hide errors)
   library(DT) # ...for data table management
   library(here) # ...for relative file path management
 })
-  
+
 # Read command-line flags
 
 args <- commandArgs(trailingOnly = TRUE)
@@ -149,7 +149,7 @@ ui <- dashboardPage(
       # Data table box
       box(title = "Data table", status = "warning", solidHeader = FALSE,
           DTOutput("dataTable"), width = 6), 
-
+      
       
       # Information box for variables
       tabBox(
@@ -215,7 +215,7 @@ within fruit, veg, and sugar-related food categories.")
 
 
 server <- function(input, output, session) {
-
+  
   
   # Data box 1: Average fruit index  
   
@@ -239,11 +239,11 @@ server <- function(input, output, session) {
     avg_veg <- round(mean(shiny_df$`the vegetable index`, na.rm = TRUE), digits = 2)
     valueBox(
       avg_veg, "...average vegetable index", icon = icon("fa-sharp fa-solid fa-carrot", lib = "font-awesome"),
-        color = # ...color argument depends on colourblindness setting
+      color = # ...color argument depends on colourblindness setting
         if(input$Id018 != TRUE) {
           "red"
         } else {"aqua"}
-    
+      
     )
   })
   
@@ -259,7 +259,7 @@ server <- function(input, output, session) {
         if(input$Id018 != TRUE) {
           "purple"
         } else {"maroon"}
-    
+      
     )
   })
   
@@ -304,7 +304,7 @@ server <- function(input, output, session) {
         } else {
           scale_fill_manual(values = colour_palette)
         }
-        
+      
       
       # Modify the plot for factor outcomeVar
       p <- p +
@@ -374,13 +374,13 @@ server <- function(input, output, session) {
     ))
   })
   
-
+  
   
   # The below prevents compareVar and dodgeVar from being set to identical 
   # values. If identical, it will switch dodgeVar to its default value of 
   # "nothing". This was done to avoid an unsightly error message in the app.
-
-
+  
+  
   # Reactive value to store the last selected value of compareVar that is not "nothing"
   last_compareVar <- reactiveVal()
   

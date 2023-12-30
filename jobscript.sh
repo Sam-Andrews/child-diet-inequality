@@ -120,7 +120,7 @@ run_visualisations() {
 # Function to run Shiny app script
 run_shiny_app() {
     echo "RUNNING SHINY APP SCRIPT..."
-    Rscript app.R "$@" # ...no error handling because Shiny app may still run even if there's an error
+    Rscript ../visualisations/youngbites.R "$@" # ...no error handling because Shiny app may still run even if there's an error
 }
 
 
