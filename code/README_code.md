@@ -34,6 +34,8 @@ Additionally, the `BMI.csv` data has been included should further researchers wi
 ## Other files
 
 This directory contains a number of other files that are not directly called by the job script, but are otherwise necessary for the other scripts to run. These include:
-* `renv.lock`: manages and automatically installs dependencies for R Scripts via `renv`.
+* `renv.lock`: manages and automatically installs dependencies for R Scripts via `renv`. This serves as a record of this pipeline's computational environment.
 * `.Rprofile`: ensures `renv` is activated.
 * `code.Rproj`: determines the 'starting point' for relative file management in R Scripts.
+
+Similar files are also seen in the `../visualisations/` directory for the `youngbites.R` script.
