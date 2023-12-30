@@ -1,14 +1,14 @@
 # Young Bites, Big Questions: Unpacking Diet and Disparity among US Children
 
 ## Overview
-This project uses NHANES data to analyse dietary consumption in early and middle childhood (ages 12 and under).
+This project uses NHANES data to explore dietary consumption in early and middle childhood (aged 12 and under).
 
 It has a number of key features, including:
-* Creation of two sets of derived variables: _"index scores"_ and _"unhealthy consumption signifiers"_ for fruit, vegetable and sugary item consumption.
-* Two static data visualisations for each of these variable sets.
-* An interactive Shiny dashboard, allowing the user to filter the data to identify vulnerable groups.
+* Creation of two derived variable sets: _"index scores"_ and _"unhealthy consumption signifiers"_ for fruit, vegetable and sugar.
+* A static data visualisation for each variable set.
+* A `shiny` app, allowing users to filter data, identifying vulnerable groups.
 
-For a detailed overview of this pipeline's scripts, stages and customisation options, see [`code/README_code.md`](https://github.com/Sam-Andrews/child-diet-inequality/blob/main/code/README_code.md).
+For a detailed overview of the pipeline's scripts and customisation options, see `code/README_code.md`.
 
 
 ## Getting started
@@ -16,7 +16,7 @@ For a detailed overview of this pipeline's scripts, stages and customisation opt
 
 If using Windows, please ensure you have [WSL 2 enabled](https://learn.microsoft.com/en-us/windows/wsl/install). 
 
-Ensure your Shell is set to `bash`:
+Make sure your Shell is set to `bash`:
 ```
 chsh -s /bin/bash
 ```
@@ -26,9 +26,9 @@ Additionally, you need to have `R` installed. For Ubuntu/Debian-based systems, y
 sudo apt update
 sudo apt install r-base
 ```
-Since this pipeline uses `renv` for automatic dependency management, you do not need to install specific packages to execute scripts in this pipeline. 
+Since this pipeline uses `renv` for automatic dependency management, you do not need to manually install specific packages to execute scripts. 
 
-Before running the pipeline, it should first be made executable. In the project root directory, run:
+Before running the pipeline, it should be made executable. In the project root directory, run:
 ```
 chmod +x jobscript.sh
 ```
@@ -41,37 +41,42 @@ Or, to see customisation options:
 ./jobscript.sh -h
 ```
 
-### Directory structure
+### Assumed directory structure
 
-Scripts require the following structure (output files are denoted with `*`) :
+*Output files are denoted with `*`*:
 
 ```
 ProjectRoot/
-│
 ├── README.md
 ├── job_script.R
 ├── report.pdf
 │
 ├── code/
-│ ├── preprocess.sh
-│ ├── data_wrangling.R
-│ ├── visualisations.R
-│ ├── app.R
-│ ├── .Rprofile
-│ ├── code.Rproj
-│ └── renv.lock
-│ └── renv/
+│   ├── README_code.md
+│   ├── preprocess.sh
+│   ├── data_wrangling.R
+│   ├── visualisations.R
+│   ├── .Rprofile
+│   ├── code.Rproj
+│   ├── renv.lock
+│   └── renv/
 │
 ├── raw/
-│ ├── DEMO_D.csv
-│ ├── FFQRAW_D.csv
-│ ├── BMI.csv
+│   ├── DEMO_D.csv
+│   ├── FFQRAW_D.csv
+│   └── BMI.csv
 │
 ├── clean/
-│ ├── clean_data.csv*
-│ ├── variable_guide.md
+│   ├── clean_data.csv*
+│   └── variable_guide.md
 │
 ├── visualisations/
-│ ├── extreme_consumption.png*
-│ ├── index_vis.png*
+│   ├── images/
+│   │   ├── extreme_consumption.png*
+│   │   └── index_vis.png*
+│   ├── young.bites.R
+│   ├── renv.lock
+│   ├── renv/
+│   └── .Rprofile
+│   └── visualisations.Rproj
 └── 

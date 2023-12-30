@@ -22,7 +22,7 @@ show_help() {
     echo "Options:"
     echo "  -h    Display help"    
     echo "  -v    Skip static visualisations script (visualisations.R)"
-    echo "  -s    Skip Shiny app script (app.R)"
+    echo "  -s    Skip Shiny app script (youngbites.R)"
     echo "  -d    Keep food consumption fields in cleaned dataset.
         Default is to only keep fields needed for visualisations.R and app.R scripts  "
     echo "  -a    Set minimum age (default is -a 0 for 0 years old). 
