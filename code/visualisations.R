@@ -82,7 +82,7 @@ if("-g" %in% args) {
   print("Saving first visualisation in SVG format...")
   
   ggsave("index_vis.svg", plot = last_plot(), 
-         path = here::here("../visualisations"),
+         path = here::here("../visualisations/images"),
          width = 5, height = 3,
          dpi = 800)
   
@@ -91,7 +91,7 @@ if("-g" %in% args) {
   print("Saving first visualisation in PNG format...")
   
   ggsave("index_vis.png", plot = last_plot(), 
-         path = here::here("../visualisations"),
+         path = here::here("../visualisations/images"),
          width = 5, height = 3,
          dpi = 800)
   
@@ -174,14 +174,14 @@ extreme_vis <- ggplot(clean_df_long, aes(x = freq_label, y = Yes_proportion,
 if("-g" %in% args) {
   print("Saving second visualisation in SVG format...")
   ggsave("extreme_consumption.svg", plot = last_plot(), 
-         path = here::here("../visualisations"),
+         path = here::here("../visualisations/images"),
          width = 7, height = 5,
          dpi = 800)
 } else {
   
   print("Saving second visualisation in PNG format...")
   ggsave("extreme_consumption.png", plot = last_plot(), 
-         path = here::here("../visualisations"),
+         path = here::here("../visualisations/images"),
          width = 7, height = 5,
          dpi = 800)
 }
