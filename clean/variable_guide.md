@@ -4,12 +4,24 @@ For non-derived variables, please see the NHANES documentation for [DEMO_D.csv](
 
 ### Index variables:
 
-`fruit_index`, `veg_index` and `sugar_index ` variables were taken by summing all non-missing values of fruit, vegetable and sugar-related food products (respectively) for each respondent and dividing by the count of non-missing values for each respondent. 
+`fruit_index`, `veg_index` and `sugar_index ` variables were taken by summing all non-missing consumption frequency values for fruit, vegetable and sugar-related food products (respectively) for each respondent and dividing by the count of non-missing values for each respondent. 
 
-For example, a respondent who reports consuming a given vegetable at frequency-level '5', another vegetable at frequency-level '6' - with the rest being 'missing' - would have a vegetable index score of '5.5'.
+For example, a respondent who reported consuming a given vegetable at frequency level '5', another vegetable at frequency level '6' - with the rest being 'missing' - would have a vegetable index score of '5.5'.
 
+These 'frequency levels' are specified as follows:
 
-See FFQRAW_D documentation for details on these frequency levels.
+_"Over the past 12 months, how often have you eaten [food]?_
+* 1 = 'never'
+* 2 = '1-6 times per year'
+* 3 = '7-11 times per year'
+* 4 = '1 time per month'
+* 5 = '2-3 times per month'
+* 6 = '1 time per week'
+* 7 = '2 times per week'
+* 8 = '3-4 times per week'
+* 9 = '5-6 times per week'
+* 10 = '1 time per day'
+* 11 = '2 or more times per day'
 
 
 ### Consumption frequency variables:
