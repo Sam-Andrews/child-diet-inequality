@@ -89,6 +89,18 @@ if $skip_shiny_app; then
     fi
 fi
 
+# Function to run a command and print elapsed time
+run_and_time() {
+    local start=$(date +%s)
+
+    echo "RUNNING $1..."
+    "$@" || { echo "Failed to run $1."; exit 1; }
+
+    local end=$(date +%s)
+    echo "Time elapsed for $1: $((end-start)) seconds."
+}
+
+
 # Set directory to where scripts are stored
 
 cd code || { echo echo "Hmmm, can't step into 'code' directory. Did it wander off? Please make sure it's where it should be, as per README.md."; exit 1; }
@@ -98,13 +110,13 @@ cd code || { echo echo "Hmmm, can't step into 'code' directory. Did it wander of
 
 echo "RUNNING DATA PROCESSING SCRIPT..."
 # ...pass command line arguments to preprocess.sh
-bash preprocess.sh "$@" || { echo "Failed to run data processing script."; exit 1; }
+run_and_time bash preprocess.sh "$@" || { echo "Failed to run data processing script."; exit 1; }
 
 
 # Run data wrangling script
 
 echo "RUNNING DATA WRANGLING SCRIPT..."
-Rscript data_wrangling.R "$@" || { echo "Failed to run data wrangling script."; exit 1; }
+run_and_time Rscript data_wrangling.R "$@" || { echo "Failed to run data wrangling script."; exit 1; }
 
 # Remove old data
 
@@ -113,13 +125,15 @@ rm ../raw/merged.csv
 # Function to run data visualisation script
 run_visualisations() {
     echo "RUNNING DATA VISUALISATION SCRIPT..."
-    echo "Passing arguments to Rscript: $@"
-    Rscript visualisations.R "$@" || { echo "Failed to run data visualisation script."; exit 1; }
+    # ...pass command line arguments to visualisations.R
+    run_and_time Rscript visualisations.R "$@" || { echo "Failed to run data visualisation script."; exit 1; }
 }
 
 # Function to run Shiny app script
 run_shiny_app() {
     echo "RUNNING SHINY APP SCRIPT..."
+    # ...pass command line arguments to youngbites.R
+    # ...no run_and_time call because the terminal will be pending when the Shiny app is running
     Rscript ../visualisations/shiny/youngbites.R "$@" # ...no error handling because Shiny app may still run even if there's an error
 }
 

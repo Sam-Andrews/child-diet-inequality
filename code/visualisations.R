@@ -101,7 +101,7 @@ if("-g" %in% args) {
   
 }
 
-
+print("...Complete.")
 # ---------------------------------------------------------------------------
 
 # Second plot: prevelence of unhealthy consumption frequency
@@ -191,6 +191,6 @@ if("-g" %in% args) {
          dpi = 800)
 }
 
-
+print("...Complete.")
 # -----------------------------------------------------------------------------
 #                               END OF SCRIPT

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Parse command line options
-# ...set default values if not specified
+# ...set default values for age filtering if not specified via -a and -A flags
 min_age=0
 max_age=12
 
@@ -14,19 +14,10 @@ while getopts "a:A:" opt; do
 done
 
 # Set directory to where raw data is stored
-cd ../raw
+cd ../raw || { echo "Hmmm, can't step into 'raw' directory. Did it wander off? Please make sure it's where it should be, as per README.md."; exit 1; }
 
-# Function to filter columns - [to remove from script!]
-filter_columns() {
-    local input_file=$1
-    local output_file=$2
-    local fields=$3
-    echo "Filtering $input_file..."
-    cut -d',' -f$fields $input_file > $output_file
-    echo "...Complete."
-}
 
-# Function to sort file by unique identifier
+# Function to sort file by unique identifier ("SEQN")
 sort_file() {
     local input_file=$1
     local output_file=$2
@@ -46,6 +37,7 @@ join_files() {
 }
 
 # Function to filter by age
+# ...assumes age ("RIDAGEYR") is in column 6 in the merged dataset
 
 filter_by_age() {
     local input_file=$1
@@ -59,13 +51,13 @@ filter_by_age() {
     head -1 $input_file > $output_file
 
     # Filter the data, skipping the header
-    # ...assumes 'age in years' is located in Column 6
+    # ...if needed, modify $6 to match the column number of the age variable:
     awk -F',' -v min="$min" -v max="$max" 'NR>1 && ($6 >= min && $6 <= max)' $input_file >> $output_file
 
     echo "...Complete."
 }
 
-# Function to remove duplicates
+# Function to remove duplicates based on the first column ("SEQN")
 remove_duplicates() {
     local input_file=$1
     local output_file=$2
@@ -93,11 +85,7 @@ recode_missing_values() {
     echo "...Complete."
 }
 
-## Main script
-
-# Filter columns
-#filter_columns DEMO_D.csv DEMO_D_cut.csv "1,5-7,9,11,12,14,16,18,20"
-#filter_columns FFQRAW_D.csv FFQRAW_D_cut.csv "1,34-39,42,43,46,49,52,55,56-63,66-72,75,78,79,81,93,176,178-182,184,186,187"
+## Run functions
 
 # Sort files
 sort_file DEMO_D.csv DEMO_D_sorted.csv

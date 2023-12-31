@@ -127,7 +127,7 @@ df <- df %>%
     FFQ0121 # ...other candy
   )
 
-
+print("...Complete.")
 
 # ----------------------------------------------------------------------------
 
@@ -167,6 +167,7 @@ print(paste0("...Number of cases lost due to interval validation: ",
 
 df <- df_missing
 
+print("...Complete.")
 
 # ----------------------------------------------------------------------------
 
@@ -258,7 +259,7 @@ extreme_sugar <- function(data, start_col_name, end_col_name, name_prefix) {
 
 df <- extreme_sugar(df, "FFQ0059", "FFQ0121", "sugar")
 
-
+print("...Complete.")
 # ----------------------------------------------------------------------------
 
 # Food consumption columns are no longer needed. Drop them, unless user
@@ -273,7 +274,7 @@ if("-d" %in% args) {
     dplyr::select(SEQN, RIAGENDR, RIDAGEYR, RIDRETH1, DMDHHSIZ, INDHHINC,
                   fruit_index, veg_index, sugar_index, fruit_1:sugar_11)
 }
-
+print("...Complete.")
 # ----------------------------------------------------------------------------
 
 # Recode variables with more intuitive values
@@ -347,7 +348,7 @@ df <- df %>%
     
   ), levels = c("1 to 3 members", "4 to 5 members", "6+ members")))
 
-
+print("...Complete.")
 # ----------------------------------------------------------------------------
 
 # Produce dedicated data frame for Shiny app
@@ -376,6 +377,7 @@ if("-s" %in% args) {
                   `low vegetable consumption` = veg_4,
                   `high sugar consumption` = sugar_9)
   saveRDS(shiny_df, file = here::here("../clean", "data.rds"))
+  print("...Complete.")
 }
 
 
