@@ -74,7 +74,7 @@ ProjectRoot/
 │   │   ├── extreme_consumption.png*
 │   │   └── index_vis.png*
 │   ├── shiny/
-│   │   ├── young.bites.R
+│   │   ├── youngbites.R
 │   │   ├── renv.lock
 │   │   ├── renv/
 │   │   └── shiny.Rproj
