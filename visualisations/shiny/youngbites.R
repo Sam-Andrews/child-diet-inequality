@@ -14,7 +14,6 @@ if (file.exists(sourcepath)) {
 }
 
 
-
 # Run required libraries
 
 renv::restore() # ...restore packages from renv.lock
@@ -51,6 +50,7 @@ col_7 <- "#5C374C"
 col_8 <- "#808F4D"
 
 colour_palette <- c(col_1, col_2, col_3, col_4, col_5, col_6, col_7, col_8)
+
 
 # Set colour-blindness-friendly colours for plotting
 
@@ -155,7 +155,7 @@ ui <- dashboardPage(
           DTOutput("dataTable"), width = 6), 
       
       
-      # Information box for variables
+      # "Variable guide" box
       tabBox(
         title = "Variable guide",
         id = "tabset1", height = "400px", width = 6,
@@ -225,9 +225,11 @@ server <- function(input, output, session) {
   
   output$fruitBox <- renderValueBox({
     # Calculate the average fruit index
-    avg_fruit <- round(median(shiny_df$`the fruit index`, na.rm = TRUE), digits = 2)
+    avg_fruit <- round(median(shiny_df$`the fruit index`, 
+                              na.rm = TRUE), digits = 2)
     valueBox(
-      avg_fruit, "...median fruit index", icon = icon("fa-sharp fa-solid fa-lemon", lib = "font-awesome"),
+      avg_fruit, "...median fruit index", 
+      icon = icon("fa-sharp fa-solid fa-lemon", lib = "font-awesome"),
       color = # ...color argument depends on colourblindness setting
         if(input$Id018 != TRUE) {
           "yellow"
@@ -240,9 +242,11 @@ server <- function(input, output, session) {
   
   output$vegBox <- renderValueBox({
     # Calculate the average veg index
-    avg_veg <- round(median(shiny_df$`the vegetable index`, na.rm = TRUE), digits = 2)
+    avg_veg <- round(median(shiny_df$`the vegetable index`, 
+                            na.rm = TRUE), digits = 2)
     valueBox(
-      avg_veg, "...median vegetable index", icon = icon("fa-sharp fa-solid fa-carrot", lib = "font-awesome"),
+      avg_veg, "...median vegetable index", 
+      icon = icon("fa-sharp fa-solid fa-carrot", lib = "font-awesome"),
       color = # ...color argument depends on colourblindness setting
         if(input$Id018 != TRUE) {
           "red"
@@ -256,9 +260,11 @@ server <- function(input, output, session) {
   
   output$sugarBox <- renderValueBox({
     # Calculate the average sugar index
-    avg_sugar <- round(median(shiny_df$`the sugar index`, na.rm = TRUE), digits = 2)
+    avg_sugar <- round(median(shiny_df$`the sugar index`, 
+                              na.rm = TRUE), digits = 2)
     valueBox(
-      avg_sugar, "...median sugar index", icon = icon("fa-sharp fa-solid fa-cubes-stacked", lib = "font-awesome"),
+      avg_sugar, "...median sugar index", 
+      icon = icon("fa-sharp fa-solid fa-cubes-stacked", lib = "font-awesome"),
       color = # ...color argument depends on colourblindness setting
         if(input$Id018 != TRUE) {
           "purple"
@@ -270,6 +276,10 @@ server <- function(input, output, session) {
   
   
   # Plot
+  # ... the below logic processes the filtering options based off user-input.
+  # ... input$outcomeVar, input$compareVar and inputdodgeVar all correspond
+  #     to the UI elements in the sidebar
+  
   output$plot1 <- renderPlot({
     req(input$outcomeVar, input$compareVar)
     
@@ -324,13 +334,14 @@ server <- function(input, output, session) {
       
       # Initialise the plot object for continuous outcomeVar
       p <- ggplot(data, aes_string(x = compareVar, y = outcomeVar, fill = fillVar)) +
+        # ...if statement for colourblindness-friendly mode
         if(input$Id018 == TRUE) {
           scale_fill_manual(values = cb_colour_palette)
         } else {
           scale_fill_manual(values = colour_palette)
         }
       
-      # For continuous outcomeVar, display the mean for the index
+      # For continuous outcomeVar, display the median for the index
       p <- p + 
         geom_bar(stat = "summary", fun = "median", position = position_dodge(width = 0.9)) +
         labs(y = "Median Index Score", x = input$compareVar) +

@@ -63,7 +63,8 @@ df <- read.csv(here::here("../raw", # ...file path to dataset
 
 print("Filtering variables...")
 
-# You can modify the below to include additional variables as required
+# You can modify the below to include additional variables from the raw
+# data as required
 
 df <- df %>%
   dplyr::select(
@@ -176,26 +177,19 @@ print("Constructing derived variables...")
 # Function to produce an index for a given range of columns
 
 make_index <- function(data, start_col, end_col) {
-  
   # ...locate start and end columns
   cols_indices <- which(names(data) %in% c(start_col, end_col))
   
   # ...check if both columns are found
   if (length(cols_indices) != 2) {
-    stop("Start or end column not found in the data frame.
-         Make sure you've specified the correct data frame, start column,
-         and end column.")
+    stop("Start or end column not found in the data frame.")
   }
   
-  # ...create a range of column names
-  cols_range <- names(data)[min(cols_indices):max(cols_indices)]
+  # ...create a range of column indices
+  cols_range <- min(cols_indices):max(cols_indices)
   
-  # Use ...ccalculate the mean of non-NA values across the specified columns
-  data %>%
-    rowwise() %>%
-    dplyr::mutate(mean_value = mean(c_across(all_of(cols_range)), na.rm = TRUE)) %>%
-    dplyr::ungroup() %>%
-    pull(mean_value)
+  # ...calculate the mean of non-NA values across the specified columns
+  rowMeans(data[, cols_range], na.rm = TRUE)
 }
 
 
@@ -208,9 +202,12 @@ df$sugar_index <- make_index(df, "FFQ0059", "FFQ0121") # ...sugar index
 
 # Convert any `NaN` to `NA`. This is required for the Shiny app.
 
-df[] <- lapply(df, function(x) { if(is.numeric(x)) { 
-  x[is.nan(x)] <- NA }; return(x) })
-
+df[] <- lapply(df, function(x) {
+  if (is.numeric(x)) {
+    x[is.nan(x)] <- NA
+  }
+  x
+})
 
 
 
