@@ -3,16 +3,15 @@
 ## Overview
 This project uses NHANES data to explore dietary consumption in early and middle childhood (aged 12 and under).
 
-It has a number of key features, including:
+Its features include:
 * Creation of two derived variable sets: _"index scores"_ and _"unhealthy consumption signifiers"_ for fruit, vegetable and sugar.
 * A static data visualisation for each variable set.
 * A `shiny` app, allowing users to filter data, identifying vulnerable groups.
 
-For a detailed overview of the pipeline's scripts and customisation options, see `code/README_code.md`.
+For an overview of the pipeline's scripts and customisation options, see `code/README_code.md`.
 
 
 ## Getting started
-**Prerequisites:**
 
 If using Windows, please ensure you have [WSL 2 enabled](https://learn.microsoft.com/en-us/windows/wsl/install). 
 
@@ -74,9 +73,10 @@ ProjectRoot/
 │   ├── images/
 │   │   ├── extreme_consumption.png*
 │   │   └── index_vis.png*
-│   ├── young.bites.R
-│   ├── renv.lock
-│   ├── renv/
-│   └── .Rprofile
-│   └── visualisations.Rproj
+│   ├── shiny/
+│   │   ├── young.bites.R
+│   │   ├── renv.lock
+│   │   ├── renv/
+│   │   └── shiny.Rproj
+│   └── 
 └── 

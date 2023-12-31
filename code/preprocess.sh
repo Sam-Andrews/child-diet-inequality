@@ -122,3 +122,5 @@ recode_missing_values merged_ws.csv merged.csv
 echo "Removing temporary files..."
 rm DEMO_D_sorted.csv FFQRAW_D_sorted.csv merged_unclean.csv merged_age.csv merged_dup.csv merged_ws.csv header.csv
 echo "...Complete."
+# -----------------------------------------------------------------------------
+#                               END OF SCRIPT

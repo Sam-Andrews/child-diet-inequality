@@ -5,16 +5,16 @@ The `code/` directory contains all scripts required to run the pipeline, other t
 It is assumed that no script in this directory will be run individually, instead being run via the job script. However, you may customise how the job script is run (see 'Customisation' section).
 
 ## Purpose of each script 
-* `preprocess.sh` joins data in the 'raw' directory, performs initial cleaning steps, and filters observations by age.
-* `data_wrangling.R` takes the joined data, performs internal validation checks (i.e. variable consistency and no excluding cases with more than 10% missing data), and creates our main study variables. It also recodes data to make it easily interpretable by subsequent scripts, and is responsible for removing unneeded fields. This script produces our final study dataset ('clean_data.csv') in the `clean/` directory. For more information on variables contained within *clean_data.csv*, see `../clean/variable_guide.md`.
-* `visualisations.R` generates two static visualisations from our cleaned data, and saves them to the `../visualisations/` directory.
+* `preprocess.sh` joins data in the 'raw' directory, performs initial cleaning steps, and filters observations by age. This preprocessing stage is important to reduce the overall size of the dataset, so that R is able to handle it much more efficiently.
+* `data_wrangling.R` takes the joined data, performs internal validation checks (i.e. variable consistency and excluding cases with more than 5% missing data), and creates our main study variables. It also recodes data to make it easily interpretable by subsequent scripts, and is responsible for removing unneeded fields. This script produces our final study dataset ('clean_data.csv') in the `clean/` directory. For more information on variables contained within *clean_data.csv*, see `../clean/variable_guide.md`.
+* `visualisations.R` generates two static visualisations from our cleaned data, and saves them to the `../visualisations/images/` directory.
 * `youngbites.R` generates the Shiny app from the cleaned data and attempts to open it in a browser. Note that this script is located in `../visualisations/`.
 
 ## Customisation
 
 This project's scripts may be adaptable for similar research projects. To facilitate re-use value, several customisation options have been integrated, allowing the scripts to be tailored for different research requirements.
 
-From the project's root directory, run `./jobscript.sh -h` to see a list of customisation options for above scripts. Options include:
+From the project's root directory, run `./jobscript.sh -h` to see a list of customisation options for the above scripts. Options include:
 * `-v`: skips the static visualisation script (`visualisations.R`)
 * `-s`: skips the Shiny app script (`app.R`)
 * `-d`: stop the removal of food consumption fields. By default, `data_wrangling.R` will remove original fields from the `FFQRAW_D.csv` dataset, leaving only fields explicitly required for visualisations.R and app.R.
@@ -28,6 +28,8 @@ For example, this line would not produce any static visualisations, but will inc
 ```
 ./jobscript.sh -v -a 6 -A 18
 ```
+
+The first time this pipeline runs, it may need to reinstall R as well as project dependencies. Therefore, running the pipeline subsequent times will take drastically less time, allowing you to experiment with customisation options.
 
 ## Other files
 

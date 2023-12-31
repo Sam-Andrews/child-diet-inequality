@@ -168,3 +168,5 @@ if ! $skip_shiny_app; then
     echo ""
     echo "If your Shiny app hasn't automatically launched, please check your browser or GUI settings."
 fi
+# -----------------------------------------------------------------------------
+#                               END OF SCRIPT
