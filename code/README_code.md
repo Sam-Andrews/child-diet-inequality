@@ -10,6 +10,7 @@ It is assumed that no script in this directory will be run individually, instead
 * `visualisations.R` generates two static visualisations from our cleaned data, and saves them to the `../visualisations/images/` directory.
 * `youngbites.R` generates the Shiny app from the cleaned data and attempts to open it in a browser. Note that this script is located in `../visualisations/`.
 
+
 ## Customisation
 
 This project's scripts may be adaptable for similar research projects. To facilitate re-use value, several customisation options have been integrated, allowing the scripts to be tailored for different research requirements.
@@ -18,7 +19,7 @@ From the project's root directory, run `./jobscript.sh -h` to see a list of cust
 
 * `-v`: skips the static visualisation script (`visualisations.R`)
 * `-s`: skips the Shiny app script (`app.R`)
-* `-d`: stop the removal of food consumption fields. By default, `data_wrangling.R` will remove original fields from the `FFQRAW_D.csv` dataset, leaving only fields explicitly required for visualisations.R and app.R.
+* `-d`: stop the removal of food consumption fields. By default, `data_wrangling.R` will remove original fields from the `FFQRAW_D.csv` dataset for efficiency purposes. This flag gives you access to the fuller version of the study dataset, but may take slightly longer to run.
 * `-p`: runs `visualisations.R` and `app.R` in parallel (as both of these scripts are only dependent on `data_wrangling.R`).
 * `-g`: saves the static visualisations to SVG format instead of PNG. SVG files are generally recommended for publishing due to its lossless format (`visualisations.R`).
 * `-i`: opens the Shiny app in a GUI rather than a browser. This is only recommended if you encounter issues with opening the app in the browser as this flag may not work in some GUIs (e.g. VSCode)
@@ -26,14 +27,12 @@ From the project's root directory, run `./jobscript.sh -h` to see a list of cust
 The following flags should only be specified *after* the above flags, if required:
 
 * `-a [number]`: sets the minimum age for observation filtering - default is `-a 0` for 0 years old (`preprocess.sh`). This flag will impact _clean_data.csv_, both static visualisations, and the Shiny dashboard.
-* `-A [number]`: sets the maximum age for observation filtering - defailt is `-A 12` for 12 years old (`preprocess.sh`). This flag will impact _clean_data.csv_, both static visualisations, and the Shiny dashboard.
+* `-A [number]`: sets the maximum age for observation filtering - default is `-A 12` for 12 years old (`preprocess.sh`). This flag will impact _clean_data.csv_, both static visualisations, and the Shiny dashboard.
 
 For example, this line would not produce any static visualisations, but will include observations aged between 6 and 18 in our cleaned dataset and Shiny dashboard:
 ```
 ./jobscript.sh -v -a 6 -A 18
 ```
-
-The first time this pipeline runs, it may need to reinstall R as well as project dependencies. Therefore, running the pipeline subsequent times will take drastically less time, allowing you to experiment with customisation options.
 
 ## Other files
 
@@ -47,3 +46,5 @@ Similar files are also seen in the `../visualisations/` directory for the `young
 ## Other considerations
 
 Please note that R scripts were written using R version 4.1.2 (2021-11-01). This older version of R was used due to compatibility with R Studio Server for WSL, of which there is no later version. If you have a later version on your machine, `renv` may reinstall R version 4.1.2.
+
+The first time these scripts run, your machine may need to reinstall R as well as project dependencies. Therefore, the pipeline may take substantially more time to run in the first instance.

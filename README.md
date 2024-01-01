@@ -40,14 +40,14 @@ Or, to see customisation options:
 ./jobscript.sh -h
 ```
 
-### Assumed directory structure
+### Directory structure
 
 *Output files are denoted with `*`*:
 
 ```
 ProjectRoot/
 ├── README.md
-├── job_script.R
+├── jobscript.R
 ├── report.pdf
 │
 ├── code/
@@ -62,8 +62,7 @@ ProjectRoot/
 │
 ├── raw/
 │   ├── DEMO_D.csv
-│   ├── FFQRAW_D.csv
-│   └── BMI.csv
+│   └── FFQRAW_D.csv
 │
 ├── clean/
 │   ├── clean_data.csv*
