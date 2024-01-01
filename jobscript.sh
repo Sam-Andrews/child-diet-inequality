@@ -25,14 +25,16 @@ show_help() {
     echo "  -s    Skip Shiny app script (youngbites.R)"
     echo "  -d    Keep food consumption fields in cleaned dataset.
         Default is to only keep fields needed for visualisations.R and app.R scripts  "
-    echo "  -a    Set minimum age (default is -a 0 for 0 years old). 
-        Ensure there's a space between '-a' and your chosen age."  # ...this is read by preprocess.sh
-    echo "  -A    Set maximum age (default is -A 12 for 12 years old). 
-        Ensure there's a space between '-A' and your chosen age."  # ...this is read by preprocess.sh
     echo "  -p    Run visualisations.R and Shiny app.R scripts in parallel (default is to run sequentially)"
     echo "  -g    Save static visualisations in SVG format (default is PNG). This is ideal for publishing." # ...this is read by visualisations.R
     echo "  -i    Open Shiny app in GUI (default is to open in browser). 
         Note that some GUIs (e.g. VSCode) may ignore this flag." # ...this is read by app.R
+    echo ""
+    echo "Please specify the following flags *after* the above options, if applicable:"
+    echo "  -a    Set minimum age (default is -a 0 for 0 years old). 
+        Ensure there's a space between '-a' and your chosen age."  # ...this is read by preprocess.sh
+    echo "  -A    Set maximum age (default is -A 12 for 12 years old). 
+        Ensure there's a space between '-A' and your chosen age."  # ...this is read by preprocess.sh
 }
 
 # Parse command line options

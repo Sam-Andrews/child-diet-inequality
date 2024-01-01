@@ -331,9 +331,11 @@ df <- df %>%
     RIDAGEYR > 4 & RIDAGEYR <= 8                         ~ "5 to 8",
     # ...need upper age limit in case user configures different age
     #    cut-offs in the command line
-    RIDAGEYR > 8 & RIDAGEYR < 13                         ~ "9 and above"
+    RIDAGEYR > 8 & RIDAGEYR < 13                         ~ "9 to 12",
+    # ...the below is only required if user sets custom "-A" flag
+    RIDAGEYR >= 13                                       ~ "Older"
     
-  ), levels = c("4 and under", "5 to 8", "9 and above")))
+  ), levels = c("4 and under", "5 to 8", "9 to 12", "Older")))
 
 
 
