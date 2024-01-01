@@ -6,7 +6,7 @@ It is assumed that no script in this directory will be run individually, instead
 
 ## Purpose of each script 
 * `preprocess.sh` joins data in the 'raw' directory, performs initial cleaning steps, and filters observations by age. This preprocessing stage is important to reduce the overall size of the dataset, so that R is able to handle it much more efficiently.
-* `data_wrangling.R` takes the joined data, performs internal validation checks (i.e. variable consistency and excluding cases with more than 5% missing data), and creates our main study variables. It also recodes data to make it easily interpretable by subsequent scripts, and is responsible for removing unneeded fields. This script produces our final study dataset ('clean_data.csv') in the `clean/` directory. For more information on variables contained within *clean_data.csv*, see `../clean/variable_guide.md`.
+* `data_wrangling.R` takes the joined data, performs data integrity checks (i.e. variable consistency and excluding cases with more than 25% missing data), and creates our main study variables. It also recodes data to make it easily interpretable by subsequent scripts, and is responsible for removing unneeded fields. This script produces our final study dataset ('clean_data.csv') in the `clean/` directory. For more information on variables contained within *clean_data.csv*, see `../clean/variable_guide.md`.
 * `visualisations.R` generates two static visualisations from our cleaned data, and saves them to the `../visualisations/images/` directory.
 * `youngbites.R` generates the Shiny app from the cleaned data and attempts to open it in a browser. Note that this script is located in `../visualisations/`.
 

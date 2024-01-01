@@ -71,7 +71,7 @@ df <- df %>%
     
     SEQN, # ...unique identifer
     
-    # Socio-economic variables:
+    # Socio-economic / demographic variables:
     
     RIAGENDR, # ...gender
     RIDAGEYR, # ...age in years
@@ -131,17 +131,17 @@ print("...Complete.")
 
 # ----------------------------------------------------------------------------
 
-# Internal validation checks
+# Data integrity checks
 
-print("Conducting internal validation checks...")
+print("Conducting data integrity checks...")
 
 nrow_df1 <- nrow(df)
 
-# Check that 'age in months' is in line with 'age in years'
+# Check that 'age in months' is consistent with 'age in years'
 
 df_age <- df %>%
   dplyr::mutate(RIDAGEMN_yr = RIDAGEMN / 12) %>% # ...divide age in months by 12
-  # ...filter out cases where the absolute difference is no greater than 1
+  # ...remove cases where the absolute difference is greater than 1
   dplyr::filter(abs(RIDAGEYR - RIDAGEMN_yr) < 1) %>%
   select(-RIDAGEMN, -RIDAGEMN_yr) # ...remove unneeded variables
 
@@ -160,7 +160,7 @@ df_missing <- df_age %>%
 nrow_df2 <- nrow(df_missing)
 
 
-print(paste0("...Number of cases lost due to interval validation: ", 
+print(paste0("...Number of cases lost due to data integrity check: ", 
              nrow_df1 - nrow_df2))
 
 # Make validated responses the new 'df'
@@ -217,11 +217,11 @@ df[] <- lapply(df, function(x) {
 
 # First, the function for fruit and veg
 
-any_fruitveg <- function(data, start_col_name, end_col_name, name_prefix) {
+freq_fruitveg <- function(data, start_col_name, end_col_name, name_prefix) {
   cols_range <- which(names(data) %in% c(start_col_name, end_col_name))
   data_slice <- data[, min(cols_range):max(cols_range)]
   
-  for (i in 1:4) {
+  for (i in 1:11) {
     var_name <- paste0(name_prefix, "_", i)
     data[[var_name]] <- apply(data_slice, 1, 
                               # ...check whether consumption is no more than
@@ -236,17 +236,17 @@ any_fruitveg <- function(data, start_col_name, end_col_name, name_prefix) {
 
 # Apply function to fruit and veg indices
 
-df <- any_fruitveg(df, "FFQ0016", "FFQ0027", "fruit")
-df <- any_fruitveg(df, "FFQ0028", "FFQ0057", "veg")
+df <- freq_fruitveg(df, "FFQ0016", "FFQ0027", "fruit")
+df <- freq_fruitveg(df, "FFQ0028", "FFQ0057", "veg")
 
 
 # Now, a similar function for sugar consumption
 
-extreme_sugar <- function(data, start_col_name, end_col_name, name_prefix) {
+freq_sugar <- function(data, start_col_name, end_col_name, name_prefix) {
   cols_range <- which(names(data) %in% c(start_col_name, end_col_name))
   data_slice <- data[, min(cols_range):max(cols_range)]
   
-  for (i in 8:11) {
+  for (i in 1:11) {
     var_name <- paste0(name_prefix, "_", i)
     data[[var_name]] <- apply(data_slice, 1, 
                               # ...check whether 'any' consumption is at that 
@@ -261,7 +261,7 @@ extreme_sugar <- function(data, start_col_name, end_col_name, name_prefix) {
 
 # Apply function to sugar variables
 
-df <- extreme_sugar(df, "FFQ0059", "FFQ0121", "sugar")
+df <- freq_sugar(df, "FFQ0059", "FFQ0121", "sugar")
 
 print("...Complete.")
 # ----------------------------------------------------------------------------
@@ -275,9 +275,15 @@ if("-d" %in% args) {
 } else {
   print("Removing unrequired fields...")
   df <- df %>%
-    dplyr::select(SEQN, RIAGENDR, RIDAGEYR, RIDRETH1, DMDHHSIZ, INDHHINC,
-                  fruit_index, veg_index, sugar_index, fruit_1:sugar_11)
+    dplyr::select(
+      # Keep only the selected fields:
+      SEQN, RIAGENDR, RIDAGEYR, RIDRETH1, DMDHHSIZ, INDHHINC, # ...demographics
+                fruit_index, veg_index, sugar_index,  # ...indices
+                fruit_1, fruit_2, fruit_3, fruit_4, # ...low fruit consumption
+                veg_1, veg_2, veg_3, veg_4, # ...low vegetable consumption
+                sugar_9, sugar_10, sugar_11) # ...high sugar consumption
 }
+
 print("...Complete.")
 # ----------------------------------------------------------------------------
 
@@ -382,6 +388,7 @@ if("-s" %in% args) {
                   `low fruit consumption` = fruit_4,
                   `low vegetable consumption` = veg_4,
                   `high sugar consumption` = sugar_9)
+  
   saveRDS(shiny_df, file = here::here("../clean", "data.rds"))
   print("...Complete.")
 }
