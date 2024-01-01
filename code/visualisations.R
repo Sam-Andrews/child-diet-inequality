@@ -65,7 +65,7 @@ index_vis <- ggplot(clean_df) +
                     values = c("Fruit index" = "#F4B860",
                                "Vegetable index" = "#DB7F8E",
                                "Sugar index" = "#388697"),
-                    # Set order of index types in 'key'
+                    # Set order of index types in 'key':
                     breaks = c("Fruit index", "Vegetable index", 
                                "Sugar index")) +
   # Set labels
@@ -112,7 +112,7 @@ print("Creating second static data visualisation")
 # Pivot longer' to aggregate groups and calculate proportions for each category
 
 clean_df_long <- clean_df %>%
-  select(fruit_1:fruit_4, veg_1:veg_4, sugar_9:sugar_11) %>%
+  select(fruit_1:fruit_3, veg_1:veg_3, sugar_9:sugar_11) %>%
   pivot_longer(cols = everything(), names_to = "variable", 
                values_to = "response") %>%
   group_by(variable) %>%
@@ -124,8 +124,7 @@ clean_df_long <- clean_df %>%
 # Original frequency labels for fruit and veg
 frequency_labels <- c("Never", 
                       "1-6 times per year", 
-                      "1 time per month",
-                      "2-3 times per month")
+                      "1 time per month")
 
 # Sugar frequency labels
 sugar_frequency_labels <- c(
@@ -157,9 +156,11 @@ clean_df_long$type <- factor(clean_df_long$type, levels = c("Fruit",
 extreme_vis <- ggplot(clean_df_long, aes(x = freq_label, y = Yes_proportion, 
                                          fill = type)) + 
   geom_bar(stat = "identity", position = position_dodge()) +
+  # Add text labels to each bar:
   geom_text(aes(label = paste0(round(Yes_proportion, 1), "%")), 
             position = position_dodge(width = 0.9),
             vjust = -0.5) +
+            # Assign colours to each food category:
   scale_fill_manual(values = c("Fruit" = "#F4B860", "Vegetable" = "#DB7F8E", 
                                "Sugar" = "#6DA1B4")) +
   # Adjust the y-axis scale:
@@ -167,9 +168,10 @@ extreme_vis <- ggplot(clean_df_long, aes(x = freq_label, y = Yes_proportion,
   theme_bw() +
   labs(x = "Consumption group", y = 
          "Proportion of unhealthy consumption", 
-       title = "The extreme ends of fruit, veg, and sugar consumption") +
+       title = "Extreme ends of fruit, vegetable, & sugar consumption") +
+  # Angle text for readability:
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  facet_wrap(~ type, scales = "free_x") +
+  facet_wrap(~ type, scales = "free_x") + # ...facet by food, veg, and sugar
   guides(fill = "none") # ...remove colour legend
 
 
