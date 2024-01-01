@@ -112,7 +112,7 @@ print("Creating second static data visualisation")
 # Pivot longer' to aggregate groups and calculate proportions for each category
 
 clean_df_long <- clean_df %>%
-  select(fruit_1:fruit_3, veg_1:veg_3, sugar_9:sugar_11) %>%
+  select(fruit_1:fruit_4, veg_1:veg_4, sugar_9:sugar_11) %>%
   pivot_longer(cols = everything(), names_to = "variable", 
                values_to = "response") %>%
   group_by(variable) %>%
@@ -124,13 +124,15 @@ clean_df_long <- clean_df %>%
 # Original frequency labels for fruit and veg
 frequency_labels <- c("Never", 
                       "1-6 times per year", 
-                      "1 time per month")
+                      "1 time per month",
+                      "2-3 times per month")
 
 # Sugar frequency labels
 sugar_frequency_labels <- c(
                             "5-6 times per week", 
                             "1 time per day",
-                            "2 or more times per day")
+                            "2 or more times per day",
+                            "2-3 times per month")
 
 # Create a new variable for frequency labels
 clean_df_long$freq_label <- case_when(
@@ -164,7 +166,10 @@ extreme_vis <- ggplot(clean_df_long, aes(x = freq_label, y = Yes_proportion,
   scale_fill_manual(values = c("Fruit" = "#F4B860", "Vegetable" = "#DB7F8E", 
                                "Sugar" = "#6DA1B4")) +
   # Adjust the y-axis scale:
-  scale_y_continuous(limits = c(0, 50), breaks = seq(0, 100, by = 10)) +
+  scale_y_continuous(limits = c(0, 50), 
+                     breaks = seq(0, 100, by = 10),
+                     # Append "%" on y-axis value labels
+                     labels = function(x) paste0(sprintf("%.0f", x), "%")) + 
   theme_bw() +
   labs(x = "Consumption group", y = 
          "Proportion of unhealthy consumption", 
