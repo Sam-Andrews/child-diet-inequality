@@ -150,6 +150,7 @@ ui <- dashboardPage(
       box(title = "Chart", status = "primary", solidHeader = FALSE, 
           plotOutput("plot1", height = 400), width = 6),
       
+      
       # Data table box
       box(title = "Data table", status = "warning", solidHeader = FALSE,
           DTOutput("dataTable"), width = 6), 
@@ -247,7 +248,7 @@ server <- function(input, output, session) {
     valueBox(
       avg_veg, "...median vegetable index", 
       icon = icon("fa-sharp fa-solid fa-carrot", lib = "font-awesome"),
-      color = # ...color argument depends on colourblindness setting
+      color = # ...colo(u)r argument depends on colourblindness setting
         if(input$Id018 != TRUE) {
           "red"
         } else {"aqua"}
@@ -358,36 +359,59 @@ server <- function(input, output, session) {
   # Data table
   # ...data table should mirror the server logic of the 'plot'
   
+  
   output$dataTable <- renderDT({
     req(input$outcomeVar, input$compareVar)
     
     data <- shiny_df
+    
+    # Exclude rows with missing dodgeVar values if dodgeVar is selected and not set to "nothing"
+    if(!is.null(input$dodgeVar) && input$dodgeVar != "nothing") {
+      data <- data %>% dplyr::filter(!is.na(.data[[input$dodgeVar]]))
+    }
+    # Similarly, exclude rows with missing compareVar values if compareVar is selected
+    if(!is.null(input$compareVar) && input$compareVar != "nothing") {
+      data <- data %>% dplyr::filter(!is.na(.data[[input$compareVar]]))
+    }
+    
+    # Prepare variable names for grouping
     compareVar <- paste0("`", input$compareVar, "`")
     dodgeVar <- if(!is.null(input$dodgeVar) && input$dodgeVar != "nothing") paste0("`", input$dodgeVar, "`") else NULL
     
+    # Define grouping variables dynamically based on the presence of dodgeVar
+    group_vars <- if (!is.null(dodgeVar)) {
+      rlang::syms(c(input$compareVar, input$dodgeVar))
+    } else {
+      rlang::syms(c(input$compareVar))
+    }
+    
+    # Create a summary table based on the type of the outcome variable
     if(is.factor(data[[input$outcomeVar]])) {
-      group_vars <- rlang::syms(c(input$compareVar, if (!is.null(dodgeVar)) input$dodgeVar))
+      # For factor variables, calculate proportion and count for extreme
+      # consumption signifiers
       data_summary <- data %>%
         dplyr::group_by(!!!group_vars) %>%
         dplyr::summarise(`Proportion (%)` = round(100 * mean(as.numeric(.data[[input$outcomeVar]] == "Yes"), na.rm = TRUE), 1),
                          Count = n(),
-                         .groups = 'drop')
+                         .groups = 'drop') # ...drop grouping for summary table
     } else {
+      # For non-factor variables, calculate median and count for indices
       outcomeVar <- paste0("`", input$outcomeVar, "`")
-      group_vars <- rlang::syms(c(input$compareVar, if (!is.null(dodgeVar)) input$dodgeVar))
       data_summary <- data %>%
         dplyr::group_by(!!!group_vars) %>%
         dplyr::summarise(Median = round(median(.data[[input$outcomeVar]], na.rm = TRUE), 1),
                          Count = n(),
-                         .groups = 'drop')
+                         .groups = 'drop') # Drop grouping for summary table
     }
     
+    # Render the data table with specific options
     datatable(data_summary, options = list(
-      pageLength = 5,
-      lengthChange = FALSE,
-      bFilter = 0
+      pageLength = 5,    # Number of entries per page
+      lengthChange = TRUE, # Enable ability to change the number of entries per page
+      bFilter = 0        # Disable the search/filter box
     ))
   })
+  
   
   
   

@@ -95,7 +95,6 @@ fi
 run_and_time() {
     local start=$(date +%s)
 
-    echo "RUNNING $1..."
     "$@" || { echo "Failed to run $1."; exit 1; }
 
     local end=$(date +%s)
