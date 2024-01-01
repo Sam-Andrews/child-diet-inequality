@@ -37,3 +37,8 @@ These variables suggest whether the respondent has consumed a fruit no more than
 _Sugar:_
 
 For high-sugar products, these variables instead depict whether the respondent has consumed _any_ high-sugar item at that frequency level or greater. For example, a respondent with a value of "Yes" for `sugar_10` would have reported consuming any high-sugar product at frequency level 10 or greater.
+
+A different calculation approach for fruit/vegetable and sugar related items was chosen due to:
+
+* Differential Health Impacts: Fruit/vegetable intake is generally health-promoting, requiring assessment of *sufficiency*. High-sugar consumption, often health-detrimental, necessitates monitoring for *excess*.
+* Granularity of Data: Fruit/vegetable variables reflect daily staples (e.g. 'apples' and 'bananas'), requiring a broad frequency assessment. Sugar variables, often more granular and non-staple (e.g. 'pancakes' and 'ice cream'), demand a frequency measurement that capture occasional consumption.

@@ -223,8 +223,10 @@ any_fruitveg <- function(data, start_col_name, end_col_name, name_prefix) {
   
   for (i in 1:4) {
     var_name <- paste0(name_prefix, "_", i)
-    data[[var_name]] <- apply(data_slice, 1, function(x) all(x <= i, 
-                                                             na.rm = TRUE))
+    data[[var_name]] <- apply(data_slice, 1, 
+                              # ...check whether consumption is no more than
+                              #    each frequency level:
+                              function(x) all(x <= i, na.rm = TRUE))
     data[[var_name]] <- factor(ifelse(data[[var_name]], "Yes", "No"))
   }
   
@@ -246,8 +248,10 @@ extreme_sugar <- function(data, start_col_name, end_col_name, name_prefix) {
   
   for (i in 8:11) {
     var_name <- paste0(name_prefix, "_", i)
-    data[[var_name]] <- apply(data_slice, 1, function(x) any(x >= i, 
-                                                             na.rm = TRUE))
+    data[[var_name]] <- apply(data_slice, 1, 
+                              # ...check whether 'any' consumption is at that 
+                              #    frequency level or greater:
+                              function(x) any(x >= i, na.rm = TRUE))
     data[[var_name]] <- factor(ifelse(data[[var_name]], "Yes", "No"))
   }
   
@@ -278,7 +282,7 @@ print("...Complete.")
 # ----------------------------------------------------------------------------
 
 # Recode variables with more intuitive values
-# ...treat them as factors for plot ordering purposes.
+# ...treat them as factors for plot ordering purposes
 # ...specify levels to determine plot order
 
 print("Recoding variables...")

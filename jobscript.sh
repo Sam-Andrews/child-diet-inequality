@@ -15,7 +15,7 @@ keep_fields=false
 # Function to display help via `./jobscript.sh -h`
 
 show_help() {
-    echo "Usage: ./$0 [-h -v -s -d -a -A -p -g -i]"
+    echo "Usage: ./$0 [-h -v -s -p -d -a -g -i -a -A]"
     echo ""
     echo "For more information about these flags, please see README_code.md."
     echo ""
@@ -23,12 +23,12 @@ show_help() {
     echo "  -h    Display help"    
     echo "  -v    Skip static visualisations script (visualisations.R)"
     echo "  -s    Skip Shiny app script (youngbites.R)"
-    echo "  -d    Keep food consumption fields in cleaned dataset.
-        Default is to only keep fields needed for visualisations.R and app.R scripts  "
-    echo "  -p    Run visualisations.R and Shiny app.R scripts in parallel (default is to run sequentially)"
-    echo "  -g    Save static visualisations in SVG format (default is PNG). This is ideal for publishing." # ...this is read by visualisations.R
+    echo "  -p    Run visualisations.R and Shiny app.R scripts in parallel (default is to run sequentially)."
+    echo "  -d    Keep food consumption fields in clean_data.csv.
+        Default is to remove non-derived fields from FFQRAW_D.csv for computational efficiency." # ...this is read by data_wrangling.R
+    echo "  -g    Save static visualisations in SVG format (default is PNG)." # ...this is read by visualisations.R
     echo "  -i    Open Shiny app in GUI (default is to open in browser). 
-        Note that some GUIs (e.g. VSCode) may ignore this flag." # ...this is read by app.R
+        Note that some software (e.g. VSCode) may ignore this flag." # ...this is read by youngbites.R
     echo ""
     echo "Please specify the following flags *after* the above options, if applicable:"
     echo "  -a    Set minimum age (default is -a 0 for 0 years old). 
