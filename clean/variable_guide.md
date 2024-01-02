@@ -34,11 +34,15 @@ _Fruit/vegetables:_
 
 These variables suggest whether the respondent has consumed a fruit no more than that frequency level. For example, a respondent with a value of "Yes" for `veg_3` has reported consuming a vegetable no more often than frequency level 3, or '7-11 times per year'. A respondent recording a "Yes" for `fruit_1` has consumed no fruit more often than frequency level 1, or "never".
 
+For the Shiny app, `fruit_4` and `veg_4` (i.e. '2-3 times per month' or less often') are used as indicators of 'low fruit/veg consumption'.
+
 _Sugar:_
 
 For high-sugar products, these variables instead depict whether the respondent has consumed _any_ high-sugar item at that frequency level or greater. For example, a respondent with a value of "Yes" for `sugar_10` would have reported consuming any high-sugar product at frequency level 10 ('1 time per day') or more often.
 
+For the Shiny app, `sugar_9` (i.e. any product '5-6 times p/week' or more often) is used as the indicator of 'high sugar consumption'.
+
 A different calculation approach for fruit/vegetable and sugar related items was chosen due to:
 
 * Differential Health Impacts: Fruit/vegetable intake is generally health-promoting, requiring assessment of *sufficiency*. High-sugar consumption, often health-detrimental, necessitates monitoring for *excess*.
-* Granularity of Data: Fruit/vegetable variables reflect daily staples (e.g. 'apples' and 'bananas'). Sugar variables, often more granular and non-staple (e.g. 'pancakes' and 'ice cream'), means that it is most appropriate to consider whether the child has consumed 'any' product at that frequency level or higher rather than 'all' of them.
+* Granularity of Data: Fruit/vegetable variables reflect daily staples (e.g. 'apples' and 'bananas'). Sugar variables are often more granular and non-staple (e.g. 'pancakes' and 'ice cream'), and so it is most appropriate to consider whether the child has consumed 'any' product at that frequency level or higher rather than 'all' of them.

@@ -15,26 +15,26 @@ keep_fields=false
 # Function to display help via `./jobscript.sh -h`
 
 show_help() {
-    echo "Usage: ./$0 [-h -v -s -p -d -a -g -i -a -A]"
+    echo "Usage: $0 [-h -v -s -p -d -g -i -a -A]"
     echo ""
-    echo "For more information about these flags, please see README_code.md."
+    echo "For more information about these flags, please see 'code/README_code.md'."
     echo ""
     echo "Options:"
     echo "  -h    Display help"    
     echo "  -v    Skip static visualisations script (visualisations.R)"
     echo "  -s    Skip Shiny app script (youngbites.R)"
-    echo "  -p    Run visualisations.R and Shiny app.R scripts in parallel (default is to run sequentially)."
-    echo "  -d    Keep food consumption fields in clean_data.csv.
-        Default is to remove non-derived fields from FFQRAW_D.csv for computational efficiency." # ...this is read by data_wrangling.R
-    echo "  -g    Save static visualisations in SVG format (default is PNG)." # ...this is read by visualisations.R
-    echo "  -i    Open Shiny app in GUI (default is to open in browser). 
-        Note that some software (e.g. VSCode) may ignore this flag." # ...this is read by youngbites.R
+    echo "  -p    Run visualisations.R and Shiny app.R scripts in parallel (default is to run sequentially)"
+    echo "  -d    Keep food consumption fields in clean_data.csv
+        Default is to remove unneeded fields from FFQRAW_D.csv for computational efficiency" # ...this is read by data_wrangling.R
+    echo "  -g    Save static visualisations in SVG format (default is PNG)" # ...this is read by visualisations.R
+    echo "  -i    Open Shiny app in GUI (default is to open in browser)
+        Note that some software (e.g. VSCode) may ignore this flag" # ...this is read by youngbites.R
     echo ""
     echo "Please specify the following flags *after* the above options, if applicable:"
-    echo "  -a    Set minimum age (default is -a 0 for 0 years old). 
-        Ensure there's a space between '-a' and your chosen age."  # ...this is read by preprocess.sh
-    echo "  -A    Set maximum age (default is -A 12 for 12 years old). 
-        Ensure there's a space between '-A' and your chosen age."  # ...this is read by preprocess.sh
+    echo "  -a    Set minimum age (default is -a 0 for 0 years old)
+        Ensure there's a space between '-a' and your chosen age"  # ...this is read by preprocess.sh
+    echo "  -A    Set maximum age (default is -A 12 for 12 years old)
+        Ensure there's a space between '-A' and your chosen age"  # ...this is read by preprocess.sh
 }
 
 # Parse command line options
@@ -62,13 +62,12 @@ while getopts "hvspaAgid" opt; do
     esac
 done
 
-#shift $((OPTIND-1))
 
 # Check for conflict: -p with -s or -v
 if $run_in_parallel; then
     if $skip_visualisations || $skip_shiny_app; then
         echo "Error: The -p flag cannot be used with -s or -v."
-        echo "Run "./jobscript.sh -h" for more information."
+        echo "Run './jobscript.sh -h' for more information."
         exit 1
     fi
 fi
@@ -77,7 +76,7 @@ fi
 if $skip_visualisations; then
     if $save_svg; then
         echo "Error: The -g flag cannot be used with -v."
-        echo "Run "./jobscript.sh -h" for more information."
+        echo "Run './jobscript.sh -h' for more information."
         exit 1
     fi
 fi
@@ -174,6 +173,7 @@ echo "Please check the 'clean' directory for the cleaned study dataset."
 # ...visualisations completion message only if not skipped
 
 if ! $skip_visualisations; then
+    echo ""
     echo "Please check the 'visualisations' directory for the visualisations."
 fi
 
