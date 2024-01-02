@@ -110,51 +110,38 @@ print("...Complete.")
 print("Creating second static data visualisation")
 
 # Pivot longer' to aggregate groups and calculate proportions for each category
-
 clean_df_long <- clean_df %>%
-  select(fruit_1:fruit_4, veg_1:veg_4, sugar_9:sugar_11) %>%
-  pivot_longer(cols = everything(), names_to = "variable", 
-               values_to = "response") %>%
-  group_by(variable) %>%
-  summarise(Yes_count = sum(response == "Yes", na.rm = TRUE), 
-            Total_count = n()) %>%
-  mutate(Yes_proportion = Yes_count / Total_count * 100) %>%
+  dplyr::select(fruit_1:fruit_4, veg_1:veg_4, sugar_9:sugar_11) %>%
+  pivot_longer(cols = everything(), names_to = "variable", values_to = "response") %>%
+  dplyr::group_by(variable) %>%
+  dplyr::summarise(Yes_count = sum(response == "Yes", na.rm = TRUE),
+            Total_count = n(),
+            Yes_proportion = Yes_count / Total_count * 100) %>%
   ungroup()
 
-# Original frequency labels for fruit and veg
-frequency_labels <- c("Never", 
-                      "1-6 times per year", 
-                      "1 time per month",
-                      "2-3 times per month")
 
-# Sugar frequency labels
-sugar_frequency_labels <- c(
-                            "5-6 times per week", 
-                            "1 time per day",
-                            "2 or more times per day",
-                            "2-3 times per month")
-
-# Create a new variable for frequency labels
-clean_df_long$freq_label <- case_when(
-  str_detect(clean_df_long$variable, "fruit") ~ factor(frequency_labels[match(gsub("\\D+", "", clean_df_long$variable), 1:4)], levels = frequency_labels),
-  str_detect(clean_df_long$variable, "veg") ~ factor(frequency_labels[match(gsub("\\D+", "", clean_df_long$variable), 1:4)], levels = frequency_labels),
-  str_detect(clean_df_long$variable, "sugar") ~ factor(sugar_frequency_labels[match(gsub("\\D+", "", clean_df_long$variable), 9:11)], levels = sugar_frequency_labels)
+# Define frequency labels for fruit, veg, and sugar
+frequency_labels <- setNames(
+  c(rep(c("Never", "1-6 times per year", "1 time per month", "2-3 times per month"), 2),
+    "5-6 times per week", "1 time per day", "2 or more times per day", "2-3 times per month"),
+  c(paste0("fruit_", 1:4), paste0("veg_", 1:4), paste0("sugar_", 9:11))
 )
 
-# Determine the type based on the variable name
-clean_df_long$type <- case_when(
-  str_detect(clean_df_long$variable, "fruit") ~ "Fruit",
-  str_detect(clean_df_long$variable, "veg") ~ "Vegetable",
-  str_detect(clean_df_long$variable, "sugar") ~ "Sugar"
-)
 
-# After determining the type, reorder the factor levels to make Sugar the last panel
-clean_df_long$type <- factor(clean_df_long$type, levels = c("Fruit", 
-                                                            "Vegetable", 
-                                                            "Sugar"))
+# Assign frequency labels and type
+clean_df_long <- clean_df_long %>%
+  dplyr::mutate(
+    freq_label = factor(frequency_labels[variable], levels = unique(frequency_labels)),
+    type = case_when(
+      str_detect(variable, "fruit") ~ "Fruit",
+      str_detect(variable, "veg") ~ "Vegetable",
+      str_detect(variable, "sugar") ~ "Sugar"
+    ),
+    type = factor(type, levels = c("Fruit", "Vegetable", "Sugar"))
+  )
 
 
-# Plotting with separate positions for each frequency label
+# Plot
 extreme_vis <- ggplot(clean_df_long, aes(x = freq_label, y = Yes_proportion, 
                                          fill = type)) + 
   geom_bar(stat = "identity", position = position_dodge()) +
