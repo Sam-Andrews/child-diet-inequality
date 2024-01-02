@@ -1,3 +1,12 @@
+# This script contains the source code for the Young Bites Shiny app. 
+# If the app does not automatically launch via the command-line, you may be able
+# to launch it manually by running the script in R Studio. 
+
+# Note that the script may state that specified icon names do not 'correspond
+# to any known icon'. This is because the icons are from an external library
+# ('font-awesome') and can be ignored.
+
+
 # Source activate.R as a failsafe (should it not automatically run)
 
 # ...the below might report that the script is "out of sync with the lock file". 

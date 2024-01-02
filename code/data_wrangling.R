@@ -1,7 +1,7 @@
 # This script reads our merged dataset and performs the following wrangling
 # tasks:
 #
-# *Index creation:
+# * Index creation:
 # ... fruit consumption index
 # ... vegetable consumption index
 # ... processed sugar consumption index
@@ -9,9 +9,10 @@
 # *Creating dummy variables signifying whether respondent consumed fruit, veg
 # and sugar at each response level
 #
-# *Removing volumns
+# * Removing fields that are not required for subsequent scripts.
 #
-# *Saving the cleaned study dataset in the `clean/` directory
+# * Saving the cleaned study dataset in the `clean/` directory and creating a
+# Shiny-optimised dataset in the `clean/` directory.
 
 # ----------------------------------------------------------------------------
 
@@ -50,11 +51,7 @@ args <- commandArgs(trailingOnly = TRUE)
 
 # Read merged dataset
 
-df <- read.csv(here::here("../raw", # ...file path to dataset
-                          "merged.csv"), # ...dataset name
-               header = TRUE, # ...read first row as header
-               na.strings = "NA") # ...sets "NA" string to missing/NA
-
+df <- read.csv(here::here("../raw", "merged.csv")) # ...dataset name
 
 # ----------------------------------------------------------------------------
 

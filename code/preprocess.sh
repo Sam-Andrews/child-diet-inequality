@@ -1,5 +1,14 @@
 #!/usr/bin/env bash
 
+# This script pre-processes the raw data files through merging by the SEQN field, filtering by age, 
+# removing duplicates, and recoding missing values.
+# It has been made modular (i.e., use of functions) to allow for easier debugging, testing, and 
+# improved re-use value.
+
+# Key assumptions of this script is that the SEQN field is in the first column of each raw dataset, 
+# and that the age variable is in the 6th column of the merged dataset.
+
+
 # Parse command line options
 # ...set default values for age filtering if not specified via -a and -A flags
 min_age=0
@@ -37,7 +46,7 @@ join_files() {
 }
 
 # Function to filter by age
-# ...assumes age ("RIDAGEYR") is in column 6 in the merged dataset
+# ...assumes age ("RIDAGEYR") is in Column 6 in the merged dataset
 
 filter_by_age() {
     local input_file=$1
@@ -76,7 +85,8 @@ remove_trailing_whitespace() {
     echo "...Complete."
 }
 
-# Function to recode missing values
+# Function to recode missing values as 'NA'
+# ...missing data are often coded as 88 or 99 in the raw data files
 recode_missing_values() {
     local input_file=$1
     local output_file=$2

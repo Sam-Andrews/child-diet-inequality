@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-### This script can be used to automatically run the project's data processing pipeline ###
-### It is intended to be run from the project's root directory ###
+# This script can be used to automatically run the project's data processing pipeline and 
+# process customisation options. It is intended to be run from the project's root directory.
 
 # Initialise flag variables
 

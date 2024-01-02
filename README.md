@@ -40,9 +40,9 @@ Or, to see customisation options:
 ./jobscript.sh -h
 ```
 
-### Directory structure
+### Compendium structure
 
-*Output files are denoted with `*`*:
+Output files are denoted with `*`:
 
 ```
 ProjectRoot/
