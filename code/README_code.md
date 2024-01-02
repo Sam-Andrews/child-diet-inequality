@@ -41,10 +41,10 @@ This directory contains a number of other files that are not directly called by 
 * `.Rprofile`: ensures `renv` is activated.
 * `code.Rproj`: determines the 'starting point' for relative file management in R Scripts.
 
-Similar files are also seen in the `../visualisations/` directory for the `youngbites.R` script.
+Similar files are also seen in the `../visualisations/shiny/` directory for the `youngbites.R` script.
 
 ## Other considerations
 
-Please note that R scripts were written using R version 4.1.2 (2021-11-01). This older version of R was used due to compatibility with R Studio Server for WSL, of which there is no later version. If you have a later version on your machine, `renv` may reinstall R version 4.1.2.
+Please note that R scripts were written using R version 4.1.2 (2021-11-01). This older version of R was used due to compatibility with R Studio Server for WSL, of which there is no later version. If you have a later version of R on your machine, `renv` may reinstall R version 4.1.2.
 
-The first time these scripts run, your machine may need to reinstall R as well as project dependencies. Therefore, the pipeline may take substantially more time to run in the first instance.
+The first time these scripts run, your machine may also need to install project dependencies. Therefore, the pipeline may take substantially more time to run in the first instance.

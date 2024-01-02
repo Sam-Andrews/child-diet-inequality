@@ -122,8 +122,8 @@ clean_df_long <- clean_df %>%
 
 # Define frequency labels for fruit, veg, and sugar
 frequency_labels <- setNames(
-  c(rep(c("Never", "1-6 times per year", "1 time per month", "2-3 times per month"), 2),
-    "5-6 times per week", "1 time per day", "2 or more times per day", "2-3 times per month"),
+  c(rep(c("Never", "1-6 times per year", "7-11 times per year", "once per month"), 2),
+    "5-6 times per week", "1 time per day", "2 or more times per day"),
   c(paste0("fruit_", 1:4), paste0("veg_", 1:4), paste0("sugar_", 9:11))
 )
 

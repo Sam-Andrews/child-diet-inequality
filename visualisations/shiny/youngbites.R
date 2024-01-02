@@ -185,7 +185,7 @@ within fruit, veg, and sugar-related food categories.")
      <br>
      <br>
      For fruit and veg, a child is counted as part of the 'low consumption 
-     group' if they consume fruit/veg just 2-3 times per month or less often.
+     group' if they consume fruit/veg just once per month or less often.
      <br>
      <br>
      For sugar, a child is part of the 'high consumption group' if they consume
