@@ -10,15 +10,17 @@
 
 
 # Parse command line options
-# ...set default values for age filtering if not specified via -a and -A flags
+# ...set default values for age
+# ...these will be overwritten if user supplies -a and -A flags
 min_age=0
 max_age=12
 
+# Read in flags
 while getopts "a:A:" opt; do
     case "$opt" in
     a) min_age=$OPTARG ;;
     A) max_age=$OPTARG ;;
-    *) ;;
+    *) ;; # ...wildcard to recognise all other flags, but do nothing
     esac
 done
 
@@ -31,7 +33,7 @@ sort_file() {
     local input_file=$1
     local output_file=$2
     echo "Sorting $input_file..."
-    sort -k1,1 $input_file > $output_file # ...assumes unique identifier is first column
+    sort -k1,1 $input_file > $output_file # ...assumes unique identifier is in first column
     echo "...Complete."
 }
 
@@ -81,6 +83,7 @@ remove_trailing_whitespace() {
     local input_file=$1
     local output_file=$2
     echo "Removing trailing whitespace..."
+    # ...regex to remove trailing whitespace from each line
     sed 's/[[:space:]]*$//g' $input_file > $output_file
     echo "...Complete."
 }

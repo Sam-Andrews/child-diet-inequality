@@ -1,7 +1,6 @@
-## This script produces two static visualisations based on our clean and 
-## merged dataset.
+# This script produces two static visualisations based on our clean and 
+# merged dataset.
 
-# ----------------------------------------------------------------------------
 
 # Source activate.R as a failsafe (should it not automatically run)
 
@@ -104,12 +103,12 @@ if("-g" %in% args) {
 print("...Complete.")
 # ---------------------------------------------------------------------------
 
-# Second plot: prevelence of unhealthy consumption frequency
+# Second plot: prevelence of unhealthy consumption frequencies
 # ...need to do some data wrangling first
 
 print("Creating second static data visualisation")
 
-# Pivot longer' to aggregate groups and calculate proportions for each category
+# 'Pivot longer' to aggregate groups and calculate proportions for each category
 clean_df_long <- clean_df %>%
   dplyr::select(fruit_1:fruit_4, veg_1:veg_4, sugar_9:sugar_11) %>%
   pivot_longer(cols = everything(), names_to = "variable", values_to = "response") %>%
@@ -153,7 +152,7 @@ extreme_vis <- ggplot(clean_df_long, aes(x = freq_label, y = Yes_proportion,
   scale_fill_manual(values = c("Fruit" = "#F4B860", "Vegetable" = "#DB7F8E", 
                                "Sugar" = "#6DA1B4")) +
   # Adjust the y-axis scale:
-  scale_y_continuous(limits = c(0, 50), 
+  scale_y_continuous(limits = c(0, 50), # ...fixes axis at 50%
                      breaks = seq(0, 100, by = 10),
                      # Append "%" on y-axis value labels
                      labels = function(x) paste0(sprintf("%.0f", x), "%")) + 

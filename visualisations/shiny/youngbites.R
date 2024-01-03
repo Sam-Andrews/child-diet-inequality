@@ -2,7 +2,7 @@
 # If the app does not automatically launch via the command-line, you may be able
 # to launch it manually by running the script in R Studio. 
 
-# Note that the script may state that specified icon names do not 'correspond
+# Note that the terminal may state that specified icon names do not 'correspond
 # to any known icon'. This is because the icons are from an external library
 # ('font-awesome') and can be ignored.
 
@@ -95,7 +95,7 @@ ui <- dashboardPage(
   ## Sidebar
   ## ...these elements control the data subsetting
   dashboardSidebar(
-    
+    # ...outcomVar is the outcome variable
     selectInput("outcomeVar", "I want to see how...", 
                 choices = c(
                   "the fruit index",
@@ -105,7 +105,7 @@ ui <- dashboardPage(
                   "low vegetable consumption",
                   "high sugar consumption"
                 )),
-    
+    # ...compareVar sets the demographic to compare across
     selectInput("compareVar", "changes by...", 
                 choices = c(
                   "gender",
@@ -114,7 +114,7 @@ ui <- dashboardPage(
                   "annual household income",
                   "size of household"
                 )),
-    
+    # ...dodgeVar sets the demographic to base ggplot's 'dodge' on
     selectInput("dodgeVar", "and compares across...", 
                 choices = c(
                   "nothing",
@@ -125,7 +125,7 @@ ui <- dashboardPage(
                   "size of household"
                 ), selected = "nothing"),
     
-    ## Adding a colour-blindness mode toggle
+    # Add a colour-blindness toggle
     tags$h5("Colourblind-friendly mode", class = "text-center"),
     
     # ...wrap the switchInput in a div to centre it
@@ -139,19 +139,19 @@ ui <- dashboardPage(
   ),
   
   
-  ## Main body
+  # Main body
   
   dashboardBody(
     
     fluidRow(
       
-      # Average fruit index box
+      # Median fruit index box
       valueBoxOutput("fruitBox"),
       
-      # Average veg index box
+      # Median veg index box
       valueBoxOutput("vegBox"),
       
-      # Average sugar index box
+      # Median sugar index box
       valueBoxOutput("sugarBox"),
       
       
@@ -194,7 +194,7 @@ within fruit, veg, and sugar-related food categories.")
      <br>
      <br>
      For fruit and veg, a child is counted as part of the 'low consumption 
-     group' if they consume fruit/veg just once per month or less often.
+     group' if they consume no fruit/veg more than once per month.
      <br>
      <br>
      For sugar, a child is part of the 'high consumption group' if they consume
@@ -231,16 +231,16 @@ within fruit, veg, and sugar-related food categories.")
 server <- function(input, output, session) {
   
   
-  # Data box 1: Average fruit index  
+  # Data box 1: Median fruit index  
   
   output$fruitBox <- renderValueBox({
-    # Calculate the average fruit index
+    # Calculate the median fruit index
     avg_fruit <- round(median(shiny_df$`the fruit index`, 
                               na.rm = TRUE), digits = 2)
     valueBox(
       avg_fruit, "...median fruit index", 
       icon = icon("fa-sharp fa-solid fa-lemon", lib = "font-awesome"),
-      color = # ...color argument depends on colourblindness setting
+      color = # ...colo(u)r argument depends on colourblindness setting
         if(input$Id018 != TRUE) {
           "yellow"
         } else {"olive"}
@@ -248,7 +248,7 @@ server <- function(input, output, session) {
   })
   
   
-  # Data box 2: Average veg index  
+  # Data box 2: Median veg index  
   
   output$vegBox <- renderValueBox({
     # Calculate the average veg index
@@ -275,7 +275,7 @@ server <- function(input, output, session) {
     valueBox(
       avg_sugar, "...median sugar index", 
       icon = icon("fa-sharp fa-solid fa-cubes-stacked", lib = "font-awesome"),
-      color = # ...color argument depends on colourblindness setting
+      color = # ...colo(u)r argument depends on colourblindness setting
         if(input$Id018 != TRUE) {
           "purple"
         } else {"maroon"}
@@ -286,9 +286,12 @@ server <- function(input, output, session) {
   
   
   # Plot
-  # ... the below logic processes the filtering options based off user-input.
-  # ... input$outcomeVar, input$compareVar and inputdodgeVar all correspond
+  # ... the below logic processes the variable selection options based off user-input.
+  # ... input$outcomeVar, input$compareVar and input$dodgeVar all correspond
   #     to the UI elements in the sidebar
+
+  #     In order to function, this section requires that the server logic differentiates
+  #     between factor and non-factor variables. This is to avoid errors.
   
   output$plot1 <- renderPlot({
     req(input$outcomeVar, input$compareVar)
@@ -323,6 +326,7 @@ server <- function(input, output, session) {
       
       # Initialise the plot object for factor outcomeVar
       p <- ggplot(data, aes_string(x = compareVar, y = "YesProportion", fill = fillVar)) +
+        # ...if statement for colourblindness-friendly mode:
         if(input$Id018 == TRUE) {
           scale_fill_manual(values = cb_colour_palette)
         } else {
@@ -338,13 +342,12 @@ server <- function(input, output, session) {
         theme_bw() +
         # ...to avoid overlapping x axis text:
         theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
-    } else {
-      # For continuous outcomeVar, proceed with the original plotting method
+    } else {  # For continuous outcomeVar...
       outcomeVar <- paste0("`", input$outcomeVar, "`")
       
       # Initialise the plot object for continuous outcomeVar
       p <- ggplot(data, aes_string(x = compareVar, y = outcomeVar, fill = fillVar)) +
-        # ...if statement for colourblindness-friendly mode
+        # ...if statement for colourblindness-friendly mode:
         if(input$Id018 == TRUE) {
           scale_fill_manual(values = cb_colour_palette)
         } else {
@@ -415,13 +418,11 @@ server <- function(input, output, session) {
     
     # Render the data table with specific options
     datatable(data_summary, options = list(
-      pageLength = 5,    # Number of entries per page
-      lengthChange = TRUE, # Enable ability to change the number of entries per page
-      bFilter = 0        # Disable the search/filter box
+      pageLength = 5,    # ...number of entries per page
+      lengthChange = TRUE, # ...enable ability to change the number of entries per page
+      bFilter = 0        # ...disable the search/filter box
     ))
   })
-  
-  
   
   
   # The below prevents compareVar and dodgeVar from being set to identical 
@@ -429,7 +430,7 @@ server <- function(input, output, session) {
   # "nothing". This was done to avoid an unsightly error message in the app.
   
   
-  # Reactive value to store the last selected value of compareVar that is not "nothing"
+  # Reactive value to store the last selected value of compareVar
   last_compareVar <- reactiveVal()
   
   observe({
@@ -457,19 +458,20 @@ server <- function(input, output, session) {
 }
 
 
-# ------------------------------- RUN APP -------------------------------------
+# -------------------------------- RUN APP ------------------------------------
 
 # Running app based on flags
 
 
-if("-i" %in% args) {
+if("-i" %in% args) { # ...if -i flag is set, launch in GUI
+  # ...some GUIs may not support this, in which case the app may launch in the browser.
   
   print("Trying to run app in the GUI...")
   print("Press Ctrl + C // Cmd + C when finished")
   
-  shinyApp(ui, server) # ...launch in default (GUI)
+  shinyApp(ui, server)
   
-} else {
+} else { # ... if -i flag is not set, launch in browser
   
   print("Trying to run app in the browser...")
   print("If your app hasn't automatically launched, please copy and paste the local URL to your browser.")
@@ -477,7 +479,7 @@ if("-i" %in% args) {
   print("Press Ctrl + C // Cmd + C when finished")
   
   shinyApp(ui, server, options = list(
-    launch.browser = TRUE # ...force browser launch instead of GUI
+    launch.browser = TRUE # ...launch in browser (default)
   ))
 }
 # -----------------------------------------------------------------------------

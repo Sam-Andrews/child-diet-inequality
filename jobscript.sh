@@ -53,7 +53,7 @@ while getopts "hvspaAgid" opt; do
     g) save_svg=true ;; # ...flag to save static visualisations in SVG format
     i) shiny_gui=true ;; # ...flag to open Shiny app in GUI rather than browser
     d) keep_fields=true ;; # ...flag to keep food consumption fields in cleaned dataset
-    *)
+    *) # ...wildcard to recognise illegal flags
         echo "...that's a red flag!" 
         echo "Your specified flag is not recognised. The available flags are as follows:"
         show_help
@@ -118,9 +118,11 @@ run_and_time bash preprocess.sh "$@" || { echo "Failed to run data processing sc
 echo "RUNNING DATA WRANGLING SCRIPT..."
 run_and_time Rscript data_wrangling.R "$@" || { echo "Failed to run data wrangling script."; exit 1; }
 
+
 # Remove old data
 
 rm ../raw/merged.csv
+
 
 # Function to run data visualisation script
 run_visualisations() {
@@ -128,6 +130,7 @@ run_visualisations() {
     # ...pass command line arguments to visualisations.R
     run_and_time Rscript visualisations.R "$@" || { echo "Failed to run data visualisation script."; exit 1; }
 }
+
 
 # Function to run Shiny app script
 run_shiny_app() {
@@ -138,7 +141,7 @@ run_shiny_app() {
 }
 
 
-# Run visualisations and Shiny scripts based on flags
+# Run visualisations and Shiny scripts based off flags
 if $run_in_parallel; then
     if ! $skip_visualisations; then
         run_visualisations "$@" &
@@ -156,7 +159,7 @@ else
     fi
 fi
 
-# Delete Shiny-specific data unless -s flag is used
+# Delete Shiny-specific dataframe unless -s flag is specified
 
 if ! $skip_shiny_app; then
 echo "Removing shiny-specific data frame..."
@@ -168,9 +171,10 @@ fi
 echo "All scripts run!"
 
 echo ""
-echo "Please check the 'clean' directory for the cleaned study dataset."
+echo "Please check the 'clean' directory for the cleaned and merged dataset."
 
-# ...visualisations completion message only if not skipped
+
+# ...visualisation completion message only if not skipped via -v flag
 
 if ! $skip_visualisations; then
     echo ""
@@ -178,7 +182,7 @@ if ! $skip_visualisations; then
 fi
 
 
-# ...Shiny app completion message only if not skipped
+# ...Shiny app completion message only if not skipped via -s flag
 if ! $skip_shiny_app; then
     echo ""
     echo "If your Shiny app hasn't automatically launched, please check your browser or GUI settings."
