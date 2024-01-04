@@ -473,10 +473,10 @@ server <- function(input, output, session) {
 # Running app based on flags
 
 
-if("-i" %in% args) { # ...if -i flag is set, launch in GUI
-  # ...some GUIs may not support this, in which case the app may launch in the browser.
+if("-i" %in% args) { # ...if -i flag is set, launch in IDE
+  # ...some IDEs may not support this, in which case the app may launch in the browser.
   
-  print("Trying to run app in the GUI...")
+  print("Trying to run app in the IDE...")
   print("Press Ctrl + C // Cmd + C when finished")
   
   shinyApp(ui, server)

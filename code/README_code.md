@@ -23,7 +23,7 @@ From the project's root directory, run `./jobscript.sh -h` to see a list of cust
 * `-d`: stop the removal of food consumption fields. By default, `data_wrangling.R` will remove original fields from the `FFQRAW_D.csv` dataset for efficiency purposes. This flag prevents this, giving you access to a fuller version of the study dataset.
 * `-p`: runs `visualisations.R` and `youngbites.R` in parallel (as both of these scripts are only dependent on `data_wrangling.R`). By default, these scripts will be run sequentially.
 * `-g`: saves the static visualisations to SVG format as well as PNG. SVG files are generally recommended for publishing due to its lossless format (`visualisations.R`). Default is to save PNG only.
-* `-i`: opens the Shiny app in a GUI rather than a browser. This is only recommended if you encounter issues with opening the app in the browser as this flag may not work in some GUIs (e.g. VSCode)
+* `-i`: opens the Shiny app in the IDE rather than a browser. This is only recommended if you encounter issues with opening the app in the browser as this flag may not work in some IDEs (e.g. VSCode)
 
 The following flags should only be specified *after* the above flags, if required:
 

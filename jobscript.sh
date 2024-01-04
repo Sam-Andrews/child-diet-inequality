@@ -27,8 +27,8 @@ show_help() {
     echo "  -d    Keep food consumption fields in clean_data.csv
         Default is to remove unneeded fields from FFQRAW_D.csv for computational efficiency" # ...this is read by data_wrangling.R
     echo "  -g    Save static visualisations in PNG & SVG formats (default is PNG only)" # ...this is read by visualisations.R
-    echo "  -i    Open Shiny app in GUI (default is to open in browser)
-        Note that some software (e.g. VSCode) may ignore this flag" # ...this is read by youngbites.R
+    echo "  -i    Open Shiny app in IDE (default is to open in browser)
+        Note that some IDEs (e.g. VSCode) may ignore this flag" # ...this is read by youngbites.R
     echo ""
     echo "Please specify the following flags *after* the above options, if applicable:"
     echo "  -a    Set minimum age (default is -a 0 for 0 years old)
