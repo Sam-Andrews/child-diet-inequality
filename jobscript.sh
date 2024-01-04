@@ -26,7 +26,7 @@ show_help() {
     echo "  -p    Run visualisations.R and Shiny app.R scripts in parallel (default is to run sequentially)"
     echo "  -d    Keep food consumption fields in clean_data.csv
         Default is to remove unneeded fields from FFQRAW_D.csv for computational efficiency" # ...this is read by data_wrangling.R
-    echo "  -g    Save static visualisations in SVG format (default is PNG)" # ...this is read by visualisations.R
+    echo "  -g    Save static visualisations in PNG & SVG formats (default is PNG only)" # ...this is read by visualisations.R
     echo "  -i    Open Shiny app in GUI (default is to open in browser)
         Note that some software (e.g. VSCode) may ignore this flag" # ...this is read by youngbites.R
     echo ""

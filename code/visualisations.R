@@ -83,11 +83,17 @@ index_vis <- ggplot(clean_df) +
 
 
 ## Save visualisation to 'visualisations' directory
-## ...if -g flag is set, save as SVG. Else, save as PNG.
+## ...if -g flag is set, save as PNG & SVG. Else, save as just PNG.
 
 if("-g" %in% args) {
   
-  print("Saving first visualisation in SVG format...")
+  print("Saving first visualisation in PNG & SVG formats...")
+  
+  ggsave("index_vis.png", plot = last_plot(), 
+         path = here::here("../visualisations/images"),
+         width = 5, height = 3,
+         # ...adjust dpi for resolution
+         dpi = 800)
   
   ggsave("index_vis.svg", plot = last_plot(), 
          path = here::here("../visualisations/images"),
@@ -180,15 +186,23 @@ extreme_vis <- ggplot(clean_df_long, aes(x = freq_label, y = Yes_proportion,
 
 
 ## Save visualisation to visualisations directory
-## ...if -g flag is set, save as SVG. Else, save as PNG.
+## ...if -g flag is set, save as PNG & SVG. Else, save as just PNG.
 
 if("-g" %in% args) {
-  print("Saving second visualisation in SVG format...")
+  print("Saving second visualisation in PNG and SVG formats...")
+ 
+  ggsave("extreme_consumption.png", plot = last_plot(), 
+         path = here::here("../visualisations/images"),
+         width = 7, height = 5,
+         # ...adjust dpi for resolution
+         dpi = 800) 
+  
   ggsave("extreme_consumption.svg", plot = last_plot(), 
          path = here::here("../visualisations/images"),
          width = 7, height = 5,
          # ...adjust dpi for resolution
          dpi = 800)
+  
 } else {
   
   print("Saving second visualisation in PNG format...")
