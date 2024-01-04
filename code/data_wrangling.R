@@ -148,7 +148,7 @@ df_age <- df %>%
 df_missing <- df_age %>%
   # ...add new column that calculates the proportion of missing values per row
   mutate(prop_missing = rowSums(is.na(.)) / ncol(.)) %>%
-  # ...filter out rows where the proportion of missing values > 10%
+  # ...filter out rows where the proportion of missing values > 25%
   filter(prop_missing <= 0.25) %>%
   # ...remove unneeded variable
   select(-prop_missing)
@@ -209,8 +209,8 @@ df[] <- lapply(df, function(x) {
 
 
 
-# Create indicator of whether respondent consumes anything at each response 
-# level for each of fruit, vegetable, and sugar variables.
+# Create indicator of respondent consumption at each response level for each 
+# of fruit, vegetable, and sugar variables.
 
 # First, the function for fruit and veg
 
@@ -221,7 +221,7 @@ freq_fruitveg <- function(data, start_col_name, end_col_name, name_prefix) {
   for (i in 1:11) {
     var_name <- paste0(name_prefix, "_", i)
     data[[var_name]] <- apply(data_slice, 1, 
-                              # ...check whether consumption is no more than
+                              # ...check whether consumption is *no more than*
                               #    each frequency level:
                               function(x) all(x <= i, na.rm = TRUE))
     data[[var_name]] <- factor(ifelse(data[[var_name]], "Yes", "No"))
@@ -246,7 +246,7 @@ freq_sugar <- function(data, start_col_name, end_col_name, name_prefix) {
   for (i in 1:11) {
     var_name <- paste0(name_prefix, "_", i)
     data[[var_name]] <- apply(data_slice, 1, 
-                              # ...check whether 'any' consumption is at that 
+                              # ...check whether *any* consumption is at that 
                               #    frequency level or greater:
                               function(x) any(x >= i, na.rm = TRUE))
     data[[var_name]] <- factor(ifelse(data[[var_name]], "Yes", "No"))
@@ -274,7 +274,8 @@ if("-d" %in% args) {
   df <- df %>%
     dplyr::select(
       # Keep only the selected fields:
-      SEQN, RIAGENDR, RIDAGEYR, RIDRETH1, DMDHHSIZ, INDHHINC, # ...demographics
+      # ...demographics:
+      SEQN, RIAGENDR, RIDAGEYR, RIDRETH1, DMDHHSIZ, INDHHINC, 
                 fruit_index, veg_index, sugar_index,  # ...indices
                 fruit_1, fruit_2, fruit_3, fruit_4, # ...low fruit consumption
                 veg_1, veg_2, veg_3, veg_4, # ...low vegetable consumption
@@ -333,7 +334,9 @@ df <- df %>%
 # Age groups
 
 df <- df %>%
-  dplyr::mutate(RIDAGEYR = factor(case_when(
+  # ...saving age as a new variable, as we need to also keep the numeric form
+  # for subsequent scripts
+  dplyr::mutate(RIDAGEYR_factor = factor(case_when(
     RIDAGEYR <= 4                                        ~ "4 and under",
     RIDAGEYR > 4 & RIDAGEYR <= 8                         ~ "5 to 8",
     # ...need upper age limit in case user configures different age
@@ -375,7 +378,7 @@ if("-s" %in% args) {
   shiny_df <- df %>%
     # Set 'natural language' variable names (backticks allow for space chars)
     dplyr::mutate(`gender` = RIAGENDR,
-                  `age` = RIDAGEYR,
+                  `age` = RIDAGEYR_factor,
                   `ethnicity` = RIDRETH1,
                   `annual household income` = INDHHINC,
                   `size of household` = DMDHHSIZ,

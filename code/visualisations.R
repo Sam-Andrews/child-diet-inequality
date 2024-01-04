@@ -69,6 +69,11 @@ index_vis <- ggplot(clean_df) +
                                "Sugar index")) +
   # Set labels
   labs(title = "Comparing diet consumption indices",
+       # Subtitle to generate dynamically, depending on dataset age range
+       subtitle = paste0("among those aged between ", 
+                         min(clean_df$RIDAGEYR), # ...minimum age
+                         " and ",
+                         max(clean_df$RIDAGEYR)), # ...maximum age
        x = "Consumption index scores",
        y = "Proportion of respondents") +
   # Give x and y axes more interpretative scales
@@ -87,6 +92,7 @@ if("-g" %in% args) {
   ggsave("index_vis.svg", plot = last_plot(), 
          path = here::here("../visualisations/images"),
          width = 5, height = 3,
+         # ...adjust dpi for resolution
          dpi = 800)
   
 } else {
@@ -96,6 +102,7 @@ if("-g" %in% args) {
   ggsave("index_vis.png", plot = last_plot(), 
          path = here::here("../visualisations/images"),
          width = 5, height = 3,
+         # ...adjust dpi for resolution
          dpi = 800)
   
 }
@@ -157,10 +164,16 @@ extreme_vis <- ggplot(clean_df_long, aes(x = freq_label, y = Yes_proportion,
                      # Append "%" on y-axis value labels
                      labels = function(x) paste0(sprintf("%.0f", x), "%")) + 
   theme_bw() +
-  labs(x = "Consumption group", y = 
-         "Proportion of unhealthy consumption", 
-       title = "Extreme ends of fruit, vegetable, & sugar consumption") +
-  # Angle text for readability:
+  labs(title = "Extreme ends of fruit, vegetable, & sugar consumption",
+       x = "Consumption frequency", 
+       y = "Proportion of unhealthy consumption", 
+       # Subtitle to generate dynamically, depending on dataset age range
+       subtitle = paste0("among those aged between ", 
+                         min(clean_df$RIDAGEYR), # ...minimum age
+                         " and ",
+                         max(clean_df$RIDAGEYR)), # ...maximum age
+       ) +
+  # Angle text for improved readability:
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   facet_wrap(~ type, scales = "free_x") + # ...facet by food, veg, and sugar
   guides(fill = "none") # ...remove colour legend
@@ -174,6 +187,7 @@ if("-g" %in% args) {
   ggsave("extreme_consumption.svg", plot = last_plot(), 
          path = here::here("../visualisations/images"),
          width = 7, height = 5,
+         # ...adjust dpi for resolution
          dpi = 800)
 } else {
   
@@ -181,6 +195,7 @@ if("-g" %in% args) {
   ggsave("extreme_consumption.png", plot = last_plot(), 
          path = here::here("../visualisations/images"),
          width = 7, height = 5,
+         # ...adjust dpi for resolution
          dpi = 800)
 }
 
