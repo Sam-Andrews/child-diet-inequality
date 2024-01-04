@@ -110,9 +110,14 @@ ui <- dashboardPage(
                 choices = c(
                   "gender",
                   "ethnicity",
-                  "age",
                   "annual household income",
-                  "size of household"
+                  "size of household",
+                  # Add age, but only if user has not set custom age flags
+                  if("-a" %in% args || "-A" %in% args) {
+                    # (no age variable if flag is set)
+                  } else {
+                    "age"
+                  }
                 )),
     # ...dodgeVar sets the demographic to base ggplot's 'dodge' on
     selectInput("dodgeVar", "and compares across...", 
@@ -120,9 +125,14 @@ ui <- dashboardPage(
                   "nothing",
                   "gender",
                   "ethnicity",
-                  "age",
                   "annual household income",
-                  "size of household"
+                  "size of household",
+                  # Add age, but only if user has not set custom age flags
+                  if("-a" %in% args || "-A" %in% args) {
+                    # (no age variable if flag is set)
+                  } else {
+                    "age"
+                  }
                 ), selected = "nothing"),
     
     # Add a colour-blindness toggle

@@ -9,7 +9,7 @@ It is assumed that no script in this directory will be run individually, instead
 * `preprocess.sh` joins data in the 'raw' directory, performs initial cleaning steps, and filters observations by age. This preprocessing stage is important to reduce the overall size of the dataset, so that R is able to handle it much more efficiently.
 * `data_wrangling.R` takes the joined data, performs data integrity checks (i.e. variable consistency and excluding cases with more than 25% missing data), and creates our main study variables. It also recodes data to make it easily interpretable by subsequent scripts, and is responsible for removing unneeded fields. This script produces our final study dataset ('clean_data.csv') in the `clean/` directory. For more information on variables contained within *clean_data.csv*, see `../clean/variable_guide.md`.
 * `visualisations.R` generates two static visualisations from our cleaned data, and saves them to the `../visualisations/images/` directory.
-* `youngbites.R` generates the Young Bites Shiny app from the cleaned data and attempts to open it in a browser. Note that this script is located in `../visualisations/shiny/`.
+* `youngbites.R` generates the Shiny app from the cleaned data and attempts to open it in a browser. Note that this script is located in `../visualisations/shiny/`.
 
 
 ## Customisation
@@ -23,17 +23,19 @@ From the project's root directory, run `./jobscript.sh -h` to see a list of cust
 * `-d`: stop the removal of food consumption fields. By default, `data_wrangling.R` will remove original fields from the `FFQRAW_D.csv` dataset for efficiency purposes. This flag prevents this, giving you access to a fuller version of the study dataset.
 * `-p`: runs `visualisations.R` and `youngbites.R` in parallel (as both of these scripts are only dependent on `data_wrangling.R`). By default, these scripts will be run sequentially.
 * `-g`: saves the static visualisations to SVG format as well as PNG. SVG files are generally recommended for publishing due to its lossless format (`visualisations.R`). Default is to save PNG only.
-* `-i`: opens the Young Bites Shiny app in a GUI rather than a browser. This is only recommended if you encounter issues with opening the app in the browser as this flag may not work in some GUIs (e.g. VSCode)
+* `-i`: opens the Shiny app in a GUI rather than a browser. This is only recommended if you encounter issues with opening the app in the browser as this flag may not work in some GUIs (e.g. VSCode)
 
 The following flags should only be specified *after* the above flags, if required:
 
 * `-a [number]`: sets the minimum age for observation filtering - default is `-a 0` for 0 years old (`preprocess.sh`). This flag will impact *clean_data.csv*, both static visualisations, and the Shiny dashboard.
 * `-A [number]`: sets the maximum age for observation filtering - default is `-A 12` for 12 years old (`preprocess.sh`). This flag will impact *clean_data.csv*, both static visualisations, and the Shiny dashboard.
 
-For example, this line would not produce any static visualisations, but will include observations aged between 6 and 18 in our cleaned dataset and Young Bites Shiny app:
+For example, this line would not produce any static visualisations, but will include observations aged between 6 and 18 in our cleaned dataset and Shiny app:
 ```
 ./jobscript.sh -v -a 6 -A 18
 ```
+
+Note that if custom 'age' flags are set, the Shiny app will not allow the user to select the age variable. This is to ensure that inaccurate age groups are not displayed. If you would like to add in your own age groupings, you'll need to manually adjust the `data_wrangling.R` and `youngbites.R` scripts.
 
 ## Other files
 
