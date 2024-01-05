@@ -13,9 +13,11 @@
 #   This error can be ignored, as it is just an artifact of the failsafe.
 
 # ...define the path
+
 sourcepath <- ("renv/activate.R")
 
 # ...check if activate.R exists and source it
+
 if (file.exists(sourcepath)) {
   source(sourcepath)
 } else {
@@ -83,17 +85,16 @@ cb_colour_palette <- c(cb_col1, cb_col2, cb_col3, cb_col4, cb_col5, cb_col6,
 
 ui <- dashboardPage(
   
-  ## Header
+  # Header
   
   dashboardHeader(title = "Young Bites App"),
   
-  ## Theme
+  # Theme
   
   skin = "blue",
   
-  
-  ## Sidebar
-  ## ...these elements will control the variable selection options
+  # Sidebar
+  # ...these elements will control the variable selection options
   dashboardSidebar(
     # ...outcomVar is the outcome variable
     selectInput("outcomeVar", "I want to see how...", 
@@ -152,9 +153,7 @@ ui <- dashboardPage(
   # Main body
   
   dashboardBody(
-    
     fluidRow(
-      
       # Median fruit index box
       valueBoxOutput("fruitBox"),
       
@@ -164,16 +163,13 @@ ui <- dashboardPage(
       # Median sugar index box
       valueBoxOutput("sugarBox"),
       
-      
       # Plot box
       box(title = "Chart", status = "primary", solidHeader = FALSE, 
           plotOutput("plot1", height = 400), width = 6),
       
-      
       # Data table box
       box(title = "Data table", status = "warning", solidHeader = FALSE,
           DTOutput("dataTable"), width = 6), 
-      
       
       # "Variable guide" box
       tabBox(
@@ -232,17 +228,13 @@ within fruit, veg, and sugar-related food categories.")
   ),
 )
 
-
-
-
 # ----------------------------- SERVER LOGIC ---------------------------------
-
 
 server <- function(input, output, session) {
   
   
   # Data box 1: Median fruit index  
-  
+
   output$fruitBox <- renderValueBox({
     # Calculate the median fruit index
     avg_fruit <- round(median(shiny_df$`the fruit index`, 
@@ -381,7 +373,6 @@ server <- function(input, output, session) {
   # Data table
   # ...data table should mirror the server logic of the 'plot'
   
-  
   output$dataTable <- renderDT({
     req(input$outcomeVar, input$compareVar)
     
@@ -390,10 +381,6 @@ server <- function(input, output, session) {
     # Exclude rows with missing dodgeVar values if dodgeVar is selected and not set to "nothing"
     if(!is.null(input$dodgeVar) && input$dodgeVar != "nothing") {
       data <- data %>% dplyr::filter(!is.na(.data[[input$dodgeVar]]))
-    }
-    # Similarly, exclude rows with missing compareVar values if compareVar is selected
-    if(!is.null(input$compareVar) && input$compareVar != "nothing") {
-      data <- data %>% dplyr::filter(!is.na(.data[[input$compareVar]]))
     }
     
     # Prepare variable names for grouping
@@ -434,11 +421,9 @@ server <- function(input, output, session) {
     ))
   })
   
-  
   # The below prevents compareVar and dodgeVar from being set to identical 
   # values. If identical, it will switch dodgeVar to its default value of 
   # "nothing". This was done to avoid an unsightly error message in the app.
-  
   
   # Reactive value to store the last selected value of compareVar
   last_compareVar <- reactiveVal()
@@ -467,11 +452,9 @@ server <- function(input, output, session) {
   
 }
 
-
 # -------------------------------- RUN APP ------------------------------------
 
 # Running app based on flags
-
 
 if("-i" %in% args) { # ...if -i flag is set, launch in IDE
   # ...some IDEs may not support this, in which case the app may launch in the browser.
@@ -479,14 +462,16 @@ if("-i" %in% args) { # ...if -i flag is set, launch in IDE
   print("Trying to run app in the IDE...")
   print("Press Ctrl + C // Cmd + C when finished")
   
-  shinyApp(ui, server)
+  shinyApp(ui, server, options = list(
+    launch.browser = FALSE # ...try to prevent browser launch
+  )) 
   
 } else { # ... if -i flag is not set, launch in browser
   
   print("Trying to run app in the browser...")
   print("If your app hasn't automatically launched, please copy and paste the local URL to your browser.")
   print("You can find the local URL in the below output. It may look something like http://127.0.0.1:xxxx")
-  print("Press Ctrl + C // Cmd + C when finished")
+  print("Press Ctrl + C // Cmd + C when finished. Note that this will make the app unavailable.")
   
   shinyApp(ui, server, options = list(
     launch.browser = TRUE # ...launch in browser (default)

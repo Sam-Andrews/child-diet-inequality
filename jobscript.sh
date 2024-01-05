@@ -65,6 +65,7 @@ done
 
 # Check for conflict: -p with -s or -v
 # ...this would otherwise attempt parallel programming on skipped scripts
+
 if $run_in_parallel; then
     if $skip_visualisations || $skip_shiny_app; then
         echo "Error: The -p flag cannot be used with -s or -v."
@@ -75,6 +76,7 @@ fi
 
 # Check for conflict: -g with -v
 # ...this would otherwise attempt to save SVGs of skipped visualisation script
+
 if $skip_visualisations; then
     if $save_svg; then
         echo "Error: The -g flag cannot be used with -v."
@@ -85,6 +87,7 @@ fi
 
 # Check for conflict: -i with -s
 # ...this would otherwise attempt to open Shiny app in IDE when it's skipped
+
 if $skip_shiny_app; then
     if $shiny_gui; then
         echo "Error: The -i flag cannot be used with -s."
@@ -94,6 +97,7 @@ if $skip_shiny_app; then
 fi
 
 # Function to run a script and print elapsed time
+
 run_and_time() {
     local start=$(date +%s)
 
@@ -127,7 +131,8 @@ run_and_time Rscript data_wrangling.R "$@" || { echo "Failed to run data wrangli
 rm ../raw/merged.csv
 
 
-# Function to run data visualisation script
+# Function to run data visualisation script (this does not run the script itself)
+
 run_visualisations() {
     echo "RUNNING DATA VISUALISATION SCRIPT..."
     # ...pass command line arguments to visualisations.R
@@ -135,7 +140,8 @@ run_visualisations() {
 }
 
 
-# Function to run Shiny app script
+# Function to run Shiny app script (this does not run the script itself)
+
 run_shiny_app() {
     echo "RUNNING SHINY APP SCRIPT..."
     # ...pass command line arguments to youngbites.R
@@ -144,7 +150,8 @@ run_shiny_app() {
 }
 
 
-# Run visualisations and Shiny scripts based off flags
+# Run visualisations and Shiny scripts based off -p flag
+
 if $run_in_parallel; then # ...run in parallel if -p flag is specified
     if ! $skip_visualisations; then
         run_visualisations "$@" &
@@ -152,7 +159,7 @@ if $run_in_parallel; then # ...run in parallel if -p flag is specified
     if ! $skip_shiny_app; then
         run_shiny_app "$@" &
     fi
-    wait # Wait for all background processes to finish
+    wait # ...wait for all background processes to finish
 else # ...run sequentially if -p flag is not specified
     if ! $skip_visualisations; then
         run_visualisations "$@"
@@ -185,6 +192,7 @@ fi
 
 
 # ...Shiny app completion message only if not skipped via -s flag
+
 if ! $skip_shiny_app; then
     echo ""
     echo "If your Shiny app hasn't automatically launched, please check your browser or GUI settings."

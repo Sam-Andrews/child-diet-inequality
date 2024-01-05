@@ -22,9 +22,11 @@
 #   This error can be ignored, as it is just an artifact of the failsafe.
 
 # ...define the path
+
 sourcepath <- ("renv/activate.R")
 
 # ...check if activate.R exists and source it
+
 if (file.exists(sourcepath)) {
   source(sourcepath)
 } else {
