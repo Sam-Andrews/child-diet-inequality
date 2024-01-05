@@ -4,9 +4,9 @@
 This project uses NHANES data to explore dietary consumption in early and middle childhood (aged 12 and under).
 
 Its features include:
-* Creation of two derived variable sets: _"index scores"_ and _"unhealthy consumption signifiers"_ for fruit, vegetable and sugar.
+* Creation of two derived variable sets: _index scores_ and _unhealthy consumption signifiers_ for fruit, vegetable and sugar.
 * A static data visualisation for each variable set.
-* A `shiny` app, allowing users to filter data, identifying vulnerable groups.
+* A `shiny` app, allowing users to select and compare variables, identifying vulnerable groups.
 
 For an overview of the pipeline's scripts and customisation options, see `code/README_code.md`.
 

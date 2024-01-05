@@ -4,7 +4,7 @@ For non-derived variables, please see the NHANES documentation for [DEMO_D.csv](
 
 ### Index variables:
 
-`fruit_index`, `veg_index` and `sugar_index ` variables were taken by summing all non-missing consumption frequency values for fruit, vegetable and sugar-related food products (individually) for each respondent and dividing by the count of non-missing values for each respondent. 
+`fruit_index`, `veg_index` and `sugar_index ` variables were taken by summing all non-missing consumption frequency levels for fruit, vegetable and sugar-related food products (individually) for each respondent and dividing by the count of non-missing values for each respondent. 
 
 For example, a respondent who reported consuming a given vegetable at frequency level '5', and another vegetable at frequency level '6' - with the rest being 'missing' - would have a vegetable index score of '5.5' ((5 + 6) / 2).
 
