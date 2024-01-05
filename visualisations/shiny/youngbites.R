@@ -93,7 +93,7 @@ ui <- dashboardPage(
   
   
   ## Sidebar
-  ## ...these elements control the data subsetting
+  ## ...these elements will control the variable selection options
   dashboardSidebar(
     # ...outcomVar is the outcome variable
     selectInput("outcomeVar", "I want to see how...", 
@@ -122,7 +122,7 @@ ui <- dashboardPage(
     # ...dodgeVar sets the demographic to base ggplot's 'dodge' on
     selectInput("dodgeVar", "and compares across...", 
                 choices = c(
-                  "nothing",
+                  "nothing", # ...has no corresponding server logic
                   "gender",
                   "ethnicity",
                   "annual household income",
@@ -199,8 +199,8 @@ This dashboard's index variables averaged out these scores for each respondent,
 within fruit, veg, and sugar-related food categories.")
                  
         ), tabPanel("Extreme consumption groups", 
-                    HTML("'Extreme consumption groups' were constructed slightly differently between
-     fruit/veg and sugar.
+                    HTML("'Extreme consumption groups' were constructed slightly 
+                    differently between fruit/veg and sugar.
      <br>
      <br>
      For fruit and veg, a child is counted as part of the 'low consumption 
@@ -218,7 +218,7 @@ within fruit, veg, and sugar-related food categories.")
       picture of dietary habits within particular demographics, but aren't 
       always useful for identifying vulnerable groups. This is because if a 
       particular demographic contains many <em>healthy</em> eaters as well as many 
-      <em>unhealthy eaters</em>, their score could average out somewhere down the 
+      <em>unhealthy</em> eaters, their score could average out somewhere down the 
       middle.
       <br>
       <br>

@@ -6,7 +6,7 @@
 # ... vegetable consumption index
 # ... processed sugar consumption index
 #
-# *Creating dummy variables signifying whether respondent consumed fruit, veg
+# * Creating dummy variables signifying whether respondent consumed fruit, veg
 # and sugar at each response level
 #
 # * Removing fields that are not required for subsequent scripts.
@@ -51,7 +51,7 @@ args <- commandArgs(trailingOnly = TRUE)
 
 # Read merged dataset
 
-df <- read.csv(here::here("../raw", "merged.csv")) # ...dataset name
+df <- read.csv(here::here("../raw", "merged.csv"))
 
 # ----------------------------------------------------------------------------
 
@@ -132,6 +132,7 @@ print("...Complete.")
 
 print("Conducting data integrity checks...")
 
+# Count number of observations before check
 nrow_df1 <- nrow(df)
 
 # Check that 'age in months' is consistent with 'age in years'
@@ -140,28 +141,27 @@ df_age <- df %>%
   dplyr::mutate(RIDAGEMN_yr = RIDAGEMN / 12) %>% # ...divide age in months by 12
   # ...remove cases where the absolute difference is greater than 1
   dplyr::filter(abs(RIDAGEYR - RIDAGEMN_yr) < 1) %>%
-  select(-RIDAGEMN, -RIDAGEMN_yr) # ...remove unneeded variables
+  dplyr::select(-RIDAGEMN, -RIDAGEMN_yr) # ...remove unneeded variables
 
 
 # Filter out cases with 25% or more missing data
 
 df_missing <- df_age %>%
   # ...add new column that calculates the proportion of missing values per row
-  mutate(prop_missing = rowSums(is.na(.)) / ncol(.)) %>%
-  # ...filter out rows where the proportion of missing values > 25%
-  filter(prop_missing <= 0.25) %>%
+  dplyr::mutate(prop_missing = rowSums(is.na(.)) / ncol(.)) %>%
+  # ...keep rows where the proportion of missing values <= 25%
+  dplyr::filter(prop_missing <= 0.25) %>%
   # ...remove unneeded variable
-  select(-prop_missing)
+  dplyr::select(-prop_missing)
 
-
+# Count number of observations after check
 nrow_df2 <- nrow(df_missing)
 
-
+# Print results of data integrity checks to the terminal
 print(paste0("...Number of cases lost due to data integrity check: ", 
              nrow_df1 - nrow_df2))
 
 # Make validated responses the new 'df'
-
 df <- df_missing
 
 print("...Complete.")
@@ -187,6 +187,7 @@ make_index <- function(data, start_col, end_col) {
   cols_range <- min(cols_indices):max(cols_indices)
   
   # ...calculate the mean of non-NA values across the specified columns
+  # ...rowMeans() is a vectorised version of dplyr's rowwise() function
   rowMeans(data[, cols_range], na.rm = TRUE)
 }
 
@@ -206,7 +207,6 @@ df[] <- lapply(df, function(x) {
   }
   x
 })
-
 
 
 # Create indicator of respondent consumption at each response level for each 
@@ -274,8 +274,8 @@ if("-d" %in% args) {
   df <- df %>%
     dplyr::select(
       # Keep only the selected fields:
-      # ...demographics:
-      SEQN, RIAGENDR, RIDAGEYR, RIDRETH1, DMDHHSIZ, INDHHINC, 
+      SEQN, # ...unique identifier
+      RIAGENDR, RIDAGEYR, RIDRETH1, DMDHHSIZ, INDHHINC, # ...demographics
                 fruit_index, veg_index, sugar_index,  # ...indices
                 fruit_1, fruit_2, fruit_3, fruit_4, # ...low fruit consumption
                 veg_1, veg_2, veg_3, veg_4, # ...low vegetable consumption
@@ -286,7 +286,7 @@ print("...Complete.")
 # ----------------------------------------------------------------------------
 
 # Recode variables with more intuitive values
-# ...treat them as factors for plot ordering purposes
+# ...treat them as factors
 # ...specify levels to determine plot order
 
 print("Recoding variables...")
@@ -321,14 +321,14 @@ df <- df %>%
 
 df <- df %>%
   dplyr::mutate(INDHHINC = factor(case_when(
-    INDHHINC == 1  | INDHHINC == 2 | INDHHINC == 3       ~ "Under $15,000",
-    INDHHINC == 4  | INDHHINC == 5                       ~ "$15,000-$24,999",
-    INDHHINC == 6  | INDHHINC == 7                       ~ "$25,000-$44,999",
-    INDHHINC == 8  | INDHHINC == 9                       ~ "$45,000-$64,999",
-    INDHHINC == 10 | INDHHINC == 11                      ~ "$65,000+"
-    
+    INDHHINC %in% c(1, 2, 3)                             ~ "Under $15,000",
+    INDHHINC %in% c(4, 5)                                ~ "$15,000-$24,999",
+    INDHHINC %in% c(6, 7)                                ~ "$25,000-$44,999",
+    INDHHINC %in% c(8, 9)                                ~ "$45,000-$64,999",
+    INDHHINC %in% c(10, 11)                              ~ "$65,000+",
   ), levels = c("Under $15,000", "$15,000-$24,999", "$25,000-$44,999",
                 "$45,000-$64,999", "$65,000+")))
+
 
 
 # Age groups
@@ -339,14 +339,11 @@ df <- df %>%
   dplyr::mutate(RIDAGEYR_factor = factor(case_when(
     RIDAGEYR <= 4                                        ~ "4 and under",
     RIDAGEYR > 4 & RIDAGEYR <= 8                         ~ "5 to 8",
-    # ...need upper age limit in case user configures different age
-    #    cut-offs in the command line
     RIDAGEYR > 8 & RIDAGEYR < 13                         ~ "9 to 12",
-    # ...the below is only required if user sets custom "-A" flag
-    RIDAGEYR >= 13                                       ~ "Older"
-    
+    # ...the below is a failsafe in case the Shiny app does not hide age
+    #    when the user selects custom age flags, as it should:
+    TRUE                                                 ~ "Older"
   ), levels = c("4 and under", "5 to 8", "9 to 12", "Older")))
-
 
 
 # Household size
@@ -354,16 +351,16 @@ df <- df %>%
 
 df <- df %>%
   dplyr::mutate(DMDHHSIZ = factor(case_when(
-    DMDHHSIZ == 1 | DMDHHSIZ == 2 | DMDHHSIZ == 3        ~ "1 to 3 members",
-    DMDHHSIZ == 4 | DMDHHSIZ == 5                        ~ "4 to 5 members",
-    DMDHHSIZ == 6 | DMDHHSIZ == 7                        ~ "6+ members"
-    
+    DMDHHSIZ %in% 1:3                                 ~ "1 to 3 members",
+    DMDHHSIZ %in% 4:5                                 ~ "4 to 5 members",
+    DMDHHSIZ >= 6                                     ~ "6+ members"
   ), levels = c("1 to 3 members", "4 to 5 members", "6+ members")))
+
 
 print("...Complete.")
 # ----------------------------------------------------------------------------
 
-# Produce dedicated data frame for Shiny app
+# Produce dedicated data frame for Shiny app via 'rds' object
 # ...this is to preserve factor levels and place space characters in column
 #    names (so that the columns are in 'natural language' in the Shiny app)
 
@@ -400,7 +397,7 @@ if("-s" %in% args) {
 
 print("Producing clean study dataset...")
 
-write.csv(df, file = here("../clean", "clean_data.csv"))
+write.csv(df, file = here::here("../clean", "clean_data.csv"))
 
 
 

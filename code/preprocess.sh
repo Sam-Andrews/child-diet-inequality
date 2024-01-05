@@ -72,7 +72,7 @@ filter_by_age() {
 remove_duplicates() {
     local input_file=$1
     local output_file=$2
-    echo "Detecting duplicate cases..."
+    echo "Removing duplicate cases..."
     head -1 $input_file > header.csv
     tail -n +2 $input_file | sort -t',' -k1,1 -u | cat header.csv - > $output_file
     echo "...Complete."
@@ -83,7 +83,7 @@ remove_trailing_whitespace() {
     local input_file=$1
     local output_file=$2
     echo "Removing trailing whitespace..."
-    # ...regex to remove trailing whitespace from each line
+    # ...regex to detect whitespace
     sed 's/[[:space:]]*$//g' $input_file > $output_file
     echo "...Complete."
 }

@@ -39,12 +39,12 @@ args <- commandArgs(trailingOnly = TRUE)
 
 # Read dataframe
 
-clean_df <- read.csv(here("../clean", "clean_data.csv"))
+clean_df <- read.csv(here::here("../clean", "clean_data.csv"))
 
 
 # ----------------------------------------------------------------------------
 
-## Plots
+# Plots
 
 # First plot: Density plot to show distribution for indices
 
@@ -52,7 +52,7 @@ print("Creating first static data visualisation")
 
 index_vis <- ggplot(clean_df) +
   # Add a density plot geom layer for index, with transparency (`alpha`)
-  # for each
+  # levels for each
   geom_density(aes(x = fruit_index, fill = "Fruit index"), alpha = 0.50,
                colour = NA) +
   geom_density(aes(x = veg_index, fill = "Vegetable index"), alpha = 0.45,
@@ -82,8 +82,8 @@ index_vis <- ggplot(clean_df) +
   theme_bw() 
 
 
-## Save visualisation to 'visualisations' directory
-## ...if -g flag is set, save as PNG & SVG. Else, save as just PNG.
+# Save visualisation to 'visualisations/' directory
+# ...if -g flag is set, save as PNG & SVG. Else, save as just PNG.
 
 if("-g" %in% args) {
   
@@ -121,14 +121,14 @@ print("...Complete.")
 
 print("Creating second static data visualisation")
 
-# 'Pivot longer' to aggregate groups and calculate proportions for each category
+# 'Pivot longer' to aggregate frequency groups and calculate proportions for each
 clean_df_long <- clean_df %>%
   dplyr::select(fruit_1:fruit_4, veg_1:veg_4, sugar_9:sugar_11) %>%
   pivot_longer(cols = everything(), names_to = "variable", values_to = "response") %>%
   dplyr::group_by(variable) %>%
-  dplyr::summarise(Yes_count = sum(response == "Yes", na.rm = TRUE),
-            Total_count = n(),
-            Yes_proportion = Yes_count / Total_count * 100) %>%
+  dplyr::summarise(yes_count = sum(response == "Yes", na.rm = TRUE),
+            total_count = n(),
+            yes_proportion = yes_count / total_count * 100) %>%
   ungroup()
 
 
@@ -140,7 +140,7 @@ frequency_labels <- setNames(
 )
 
 
-# Assign frequency labels and type
+# Assign frequency labels and food category
 clean_df_long <- clean_df_long %>%
   dplyr::mutate(
     freq_label = factor(frequency_labels[variable], levels = unique(frequency_labels)),
@@ -154,11 +154,11 @@ clean_df_long <- clean_df_long %>%
 
 
 # Plot
-extreme_vis <- ggplot(clean_df_long, aes(x = freq_label, y = Yes_proportion, 
+extreme_vis <- ggplot(clean_df_long, aes(x = freq_label, y = yes_proportion, 
                                          fill = type)) + 
   geom_bar(stat = "identity", position = position_dodge()) +
   # Add text labels to each bar:
-  geom_text(aes(label = paste0(round(Yes_proportion, 1), "%")), 
+  geom_text(aes(label = paste0(round(yes_proportion, 1), "%")), 
             position = position_dodge(width = 0.9),
             vjust = -0.5) +
             # Assign colours to each food category:

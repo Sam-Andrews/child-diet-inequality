@@ -26,7 +26,7 @@ show_help() {
     echo "  -p    Run visualisations.R and Shiny app.R scripts in parallel (default is to run sequentially)"
     echo "  -d    Keep food consumption fields in clean_data.csv
         Default is to remove unneeded fields from FFQRAW_D.csv for computational efficiency" # ...this is read by data_wrangling.R
-    echo "  -g    Save static visualisations in PNG & SVG formats (default is PNG only)" # ...this is read by visualisations.R
+    echo "  -g    Save static visualisations in both PNG & SVG formats (default is PNG only)" # ...this is read by visualisations.R
     echo "  -i    Open Shiny app in IDE (default is to open in browser)
         Note that some IDEs (e.g. VSCode) may ignore this flag" # ...this is read by youngbites.R
     echo ""
@@ -45,15 +45,15 @@ while getopts "hvspaAgid" opt; do
         show_help
         exit 0
         ;;
-    v) skip_visualisations=true ;; # ...flag to skip static visualisations script
-    s) skip_shiny_app=true ;; # ...flag to skip Shiny app script
-    p) run_in_parallel=true ;; # ...flag to run scripts in parallel
-    a) ;; # ...recognise flag but do nothing (since it's for preprocess.sh)
-    A) ;; # ...recognise flag but do nothing (since it's for preprocess.sh)
+    v) skip_visualisations=true ;; # ...flag to skip static visualisations script (visualisations.R)
+    s) skip_shiny_app=true ;; # ...flag to skip Shiny app script (youngbites.R)
+    p) run_in_parallel=true ;; # ...flag to run visualisations.R and youngbites.R scripts in parallel
+    d) keep_fields=true ;; # ...flag to keep food consumption fields in cleaned dataset
     g) save_svg=true ;; # ...flag to save static visualisations in SVG format
     i) shiny_gui=true ;; # ...flag to open Shiny app in GUI rather than browser
-    d) keep_fields=true ;; # ...flag to keep food consumption fields in cleaned dataset
-    *) # ...wildcard to recognise illegal flags
+    a) ;; # ...recognise flag but do nothing (since it's for preprocess.sh)
+    A) ;; # ...recognise flag but do nothing (since it's for preprocess.sh)
+    *) # ...wildcard to recognise illegal flags and:
         echo "...that's a red flag!" 
         echo "Your specified flag is not recognised. The available flags are as follows:"
         show_help
@@ -64,6 +64,7 @@ done
 
 
 # Check for conflict: -p with -s or -v
+# ...this would otherwise attempt parallel programming on skipped scripts
 if $run_in_parallel; then
     if $skip_visualisations || $skip_shiny_app; then
         echo "Error: The -p flag cannot be used with -s or -v."
@@ -73,6 +74,7 @@ if $run_in_parallel; then
 fi
 
 # Check for conflict: -g with -v
+# ...this would otherwise attempt to save SVGs of skipped visualisation script
 if $skip_visualisations; then
     if $save_svg; then
         echo "Error: The -g flag cannot be used with -v."
@@ -82,6 +84,7 @@ if $skip_visualisations; then
 fi
 
 # Check for conflict: -i with -s
+# ...this would otherwise attempt to open Shiny app in IDE when it's skipped
 if $skip_shiny_app; then
     if $shiny_gui; then
         echo "Error: The -i flag cannot be used with -s."
@@ -90,7 +93,7 @@ if $skip_shiny_app; then
     fi
 fi
 
-# Function to run a command and print elapsed time
+# Function to run a script and print elapsed time
 run_and_time() {
     local start=$(date +%s)
 
@@ -142,7 +145,7 @@ run_shiny_app() {
 
 
 # Run visualisations and Shiny scripts based off flags
-if $run_in_parallel; then
+if $run_in_parallel; then # ...run in parallel if -p flag is specified
     if ! $skip_visualisations; then
         run_visualisations "$@" &
     fi
@@ -150,7 +153,7 @@ if $run_in_parallel; then
         run_shiny_app "$@" &
     fi
     wait # Wait for all background processes to finish
-else
+else # ...run sequentially if -p flag is not specified
     if ! $skip_visualisations; then
         run_visualisations "$@"
     fi
@@ -169,7 +172,6 @@ fi
 # All scripts run
 
 echo "All scripts run!"
-
 echo ""
 echo "Please check the 'clean' directory for the cleaned and merged dataset."
 
@@ -178,7 +180,7 @@ echo "Please check the 'clean' directory for the cleaned and merged dataset."
 
 if ! $skip_visualisations; then
     echo ""
-    echo "Please check the 'visualisations' directory for the visualisations."
+    echo "Please check the 'visualisations' directory for the static visualisations."
 fi
 
 
