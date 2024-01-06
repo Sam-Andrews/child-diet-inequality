@@ -33,14 +33,26 @@ cd ../raw || { echo "Hmmm, can't step into 'raw' directory. Did it wander off? P
 
 
 # Function to sort file by unique identifier ("SEQN")
+# ...function includes extra mechanisms to ignore the header because the 'sort' command
+# can work differently between Windows WSL and native Linux distros
 
 sort_file() {
     local input_file=$1
     local output_file=$2
     echo "Sorting $input_file..."
-    sort -k1,1 $input_file > $output_file # ...assumes unique identifier is in first column
+
+    # Extract the header and store it
+    head -n 1 $input_file > header.csv
+
+    # Sort the rest of the file, skipping the header
+    tail -n +2 $input_file | sort -k1,1 > sorted_body.csv
+
+    # Concatenate the header and the sorted body
+    cat header.csv sorted_body.csv > $output_file
+
     echo "...Complete."
 }
+
 
 # Function to join files
 
@@ -52,6 +64,7 @@ join_files() {
     join -t',' -1 1 -2 1 $file1 $file2 > $output_file
     echo "...Complete."
 }
+
 
 # Function to filter by age
 # ...assumes age ("RIDAGEYR") is in Column 6 in the merged dataset
@@ -137,7 +150,7 @@ recode_missing_values merged_ws.csv merged.csv
 # Remove temporary files
 
 echo "Removing temporary files..."
-rm DEMO_D_sorted.csv FFQRAW_D_sorted.csv merged_unclean.csv merged_age.csv merged_dup.csv merged_ws.csv header.csv
+rm DEMO_D_sorted.csv FFQRAW_D_sorted.csv merged_unclean.csv merged_age.csv merged_dup.csv merged_ws.csv header.csv sorted_body.csv
 echo "...Complete."
 # -----------------------------------------------------------------------------
 #                               END OF SCRIPT
