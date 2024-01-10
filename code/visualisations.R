@@ -8,20 +8,20 @@
 #   This error can be ignored, as it is just an artifact of the failsafe.
 
 # ...define the path
-sourcepath <- ("renv/activate.R")
+#sourcepath <- ("renv/activate.R")
 
 # ...check if activate.R exists and source it
-if (file.exists(sourcepath)) {
-  source(sourcepath)
-} else {
-  stop("activate.R file not found. Please ensure it exists at ", sourcepath)
-}
+#if (file.exists(sourcepath)) {
+#  source(sourcepath)
+#} else {
+#  stop("activate.R file not found. Please ensure it exists at ", sourcepath)
+#}
 
 
 
 # Run required libraries
 
-renv::restore() # ...restore packages from renv.lock
+#renv::restore() # ...restore packages from renv.lock
 
 suppressMessages({ # ...removes clutter in the terminal (doesn't hide errors)
   library(here) # ...for relative path file management

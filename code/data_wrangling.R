@@ -23,21 +23,21 @@
 
 # ...define the path
 
-sourcepath <- ("renv/activate.R")
+#sourcepath <- ("renv/activate.R")
 
 # ...check if activate.R exists and source it
 
-if (file.exists(sourcepath)) {
-  source(sourcepath)
-} else {
-  stop("activate.R file not found. Please ensure it exists at ", sourcepath)
-}
+#if (file.exists(sourcepath)) {
+#  source(sourcepath)
+#} else {
+#  stop("activate.R file not found. Please ensure it exists at ", sourcepath)
+#}
 
 
 
 # Run libraries
 
-renv::restore() # ...restore renv environment
+#renv::restore() # ...restore renv environment
 
 suppressMessages({ # ...removes clutter in the terminal (doesn't hide errors)
   library(here) # ...for relative path file management
