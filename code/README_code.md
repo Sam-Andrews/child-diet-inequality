@@ -8,7 +8,8 @@
   - [Troubleshooting](#troubleshooting)
     - [*"I can't pull the Docker image"*](#i-cant-pull-the-docker-image)
     - [*"I want to bypass Docker"*](#i-want-to-bypass-docker)
-    - [*"The Shiny app doesn't open, even though the script appears to run"*](#the-shiny-app-doesnt-open-even-though-the-script-appears-to-run)
+    - [*"The Shiny app doesn't automatically open, even though the script appears to run"*](#the-shiny-app-doesnt-automatically-open-even-though-the-script-appears-to-run)
+    - [*"Running the Shiny app leaves the terminal infinitely pending"*](#running-the-shiny-app-leaves-the-terminal-infinitely-pending)
   - [Computational environment](#computational-environment)
 
 
@@ -23,7 +24,7 @@ It is assumed that no script in this directory will be run individually, instead
 * `jobscript.sh` (in the project root directory): Responsible for running each of the below scripts and for parsing command-line flags (see 'Customisation' section).
 * `preprocess.sh`: Joins data from the 'raw' directory, performs initial cleaning steps, and filters observations by age. This preprocessing stage is important to reduce the overall size of the dataset, so that R is able to handle it much more efficiently.
 * `data_wrangling.R`: Performs data integrity checks on the merged data (i.e. variable consistency and excluding cases with more than 25% missing data), and creates the derived variables. It also recodes data to make it easily interpretable by subsequent scripts, and is responsible for removing unneeded fields - further improving efficiency. This script produces our final study dataset ('clean_data.csv') in the `clean/` directory. For more information on variables contained within *clean_data.csv*, see `../clean/variable_guide.md`.
-* `visualisations.R`: Generates two static visualisations from our cleaned data, and saves them to the `../visualisations/images/` directory. These visualisations depict each of this project's derived variable sets (i.e. 'food consumption indicies', and 'extreme consumption groups').
+* `visualisations.R`: Generates two static visualisations from our cleaned data, and saves them to the `../visualisations/images/` directory. These visualisations depict each of this project's derived variable sets (i.e. 'food consumption indices', and 'extreme consumption groups').
 * `youngbites.R`: Generates the Shiny app ("Young Bites") from the cleaned data and attempts to open it in a browser. Note that this script is located in `../visualisations/shiny/`. This app allows the user to select variables to observe subgroup comparisons for both of these derived variable sets.
 
 
@@ -61,7 +62,7 @@ The commands to run the pipeline, as outlined above, can be broken down as follo
 * `--rm`: This optional flag removes the Docker container upon exit (avoiding the accumulation of unused containers).
 * `-p 3838:3838`: Specifies the local port where the Shiny app will be run. If changed, you must also modify the `../visualisations/youngbites.R` script and the `../docker-compose.yml` file to suit. This can be removed if you plan to skip the Shiny app via the `-s` flag.
 * `-e FLAGS=""`: Processes the customisation flags outlined in the above 'Customisation' section. This can be removed if you wish to specify no flags.
-* `pipeline`: Specifies the Docker image to run.
+* `pipeline`: Specifies the name of the Docker image to run.
 
 
 ## Other files
@@ -89,24 +90,36 @@ If you are still encountering issues pulling the Docker image, then you may wish
 docker build -t pipeline .
 ```
 
+You can then run the pipeline as normal (see `../README.md`)
+
 ### *"I want to bypass Docker"*
 
 If you're still encountering issues with Docker and/or would prefer to bypass the service altogether, you may instead directly run the job script. 
 
 From the project root directory, simply run `./jobscript.sh` to execute the pipeline. Customisation flags may also be added (e.g. `./jobscript.sh -v -a 6 -A 18`). 
 
-If running the job script directly, you should ensure your local environment is aligned with the Docker image as much as possible, particularly for R and its dependencies. You can do this by closely adhering to the computational environment specification (see below section).
+If running the job script directly, you should ensure your local environment is aligned with the Docker image as much as possible, particularly for R and its dependencies. You can do this by closely adhering to the computational environment specification (see 'Computational environment' section).
 
 
-### *"The Shiny app doesn't open, even though the script appears to run"*
+### *"The Shiny app doesn't automatically open, even though the script appears to run"*
 
-While the Shiny app is pending in the terminal, enter `http://localhost:3838/` into your browser. Note that terminating the pipeline will make the Shiny app unavailable locally.
+While the Shiny app is pending in the terminal, manually copy and paste the local URL into your browser. This URL will be printed in the terminal, and may look like: `http://127.0.0.1:3838`.
+
+Alternatively, enter `http://localhost:3838/` into your browser while the script is pending.
+ 
+Note that terminating the pipeline (via Ctrl + C // Cmd + C) will make the Shiny app unavailable locally.
 
 If the Shiny app still refuses to run, then there is likely an issue with the local port not being correctly mapped. Instead, try running the below line. This is a more 'controlled' version of the pipeline, and as such customisation options are not available:
 
 ```
 docker-compose up pipeline
 ```
+
+### *"Running the Shiny app leaves the terminal infinitely pending"*
+
+This is by design. The terminal needs to be in a pending status so that the '3838' port is maintained, allowing the Shiny app to run in the browser.
+
+Simply press Ctrl + C // Cmd + C to terminate the Shiny script and complete the pipeline.
 
 
 ## Computational environment
@@ -116,5 +129,3 @@ The pipeline was developed and tested on a Windows 11 PC with WSL 2 (Ubuntu 22.0
 R scripts were developed using R version 4.1.2 (2021-11-01). This older version of R was used due to compatibility with R Studio Server for WSL, of which there is no later version. 
 
 For a detailed account of this pipeline's computational environment, please see the `Dockerfile` for the system-level environment, and `renv.lock` for the R-specific environment.
-
-[def]: #the-shiny-app-doesnt-open-even-though-the-script-appears-to-run

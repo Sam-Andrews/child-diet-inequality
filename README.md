@@ -4,25 +4,27 @@
 This project uses NHANES data to explore dietary consumption in early and middle childhood (aged 12 and under).
 
 Its features include:
-* Creation of two derived variable sets: _index scores_ and _unhealthy consumption signifiers_ for fruit, vegetable and sugar.
+* Creation of two derived variable sets: _index scores_ and _unhealthy consumption signifiers_ for fruit, vegetables and sugar.
 * A static data visualisation for each variable set.
 * A `shiny` app, allowing users to select and compare variables, identifying vulnerable groups.
 
-For an overview of the pipeline's scripts, customisation, and troubleshooting, see `code/README_code.md`.
+### More information
+
+For an overview of the pipeline's scripts, customisation options, and troubleshooting guidance, please see `code/README_code.md`. 
 
 ## Getting started
 
 ### Prerequisites
 
-Please ensure [Docker](https://docs.docker.com/engine/install/) is installed on your system.
+* Please ensure [Docker](https://docs.docker.com/engine/install/) is installed on your system.
+* If using Windows, please [enable WSL 2](https://learn.microsoft.com/en-us/windows/wsl/install). 
+* Your command-line Shell should be set to `Bash`.
 
-If using Windows, please [enable WSL 2](https://learn.microsoft.com/en-us/windows/wsl/install). 
+As this pipeline is Dockerised, you do not need to manually install R or any dependencies.
 
-As this pipeline uses Docker for environment management, you do not need to install R or any specific dependencies.
+### How to run this pipeline
 
-### Running the pipeline
-
-You'll first need to pull the pipeline's Docker image. In the Bash command-line, run:
+You'll first need to pull the pipeline's Docker image from Docker Hub. In the `Bash` command-line, run:
 
 ```
 docker pull sammyosh/child-diet-inequality-image:latest
@@ -42,13 +44,6 @@ docker-compose run --rm -e FLAGS="-h" pipeline
 
 For more information on this pipeline's customisation options, please see `code/README_code.md`
 
-### Alterative approach
-
-After building the Docker image, the pipeline can be run (without customisation flags) through:
-
-```
-docker-compose up pipeline
-```
 
 ### Compendium structure
 
