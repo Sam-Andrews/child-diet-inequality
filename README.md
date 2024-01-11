@@ -10,35 +10,41 @@ Its features include:
 
 For an overview of the pipeline's scripts and customisation options, see `code/README_code.md`.
 
-
 ## Getting started
 
-If using Windows, please ensure you have [WSL 2 enabled](https://learn.microsoft.com/en-us/windows/wsl/install). 
+### Prerequisites
 
-Make sure your Shell is set to `bash`:
+Please ensure [Docker](https://docs.docker.com/engine/install/) is installed on your system.
+
+If using Windows, please also ensure you have [WSL 2 enabled](https://learn.microsoft.com/en-us/windows/wsl/install). 
+
+As this pipeline uses Docker for environment management, you do not need to install R or any specific dependencies to run this pipeline.
+
+## Running the pipeline
+
+To execute the full pipeline under its default settings, run:
+
 ```
-chsh -s /bin/bash
+docker-compose run --rm -p 3838:3838 pipeline
 ```
 
-Additionally, you need to have `R` installed. For Ubuntu/Debian-based systems, you can install `R` by running:
-```
-sudo apt update
-sudo apt install r-base
-```
-Since this pipeline uses `renv` for automatic dependency management, you do not need to manually install specific packages to execute scripts. 
-
-Before running the pipeline, it should be made executable. In the project root directory, run:
-```
-chmod +x jobscript.sh
-```
-From here, you may execute the pipeline:
-```
-./jobscript.sh
-```
 Or, to see customisation options:
+
 ```
-./jobscript.sh -h
+docker-compose run --rm -e FLAGS="-h" pipeline
 ```
+
+For more information on this pipeline's customisation options, please see `code/README_code.md`
+
+### Alterative approach
+
+If Docker fails to configure the pipeline correctly, please try running:
+
+```
+docker-compose up pipeline
+```
+
+Note that customisation flags are unavailable through this command.
 
 ### Compendium structure
 
@@ -49,16 +55,16 @@ ProjectRoot/
 ├── README.md
 ├── jobscript.R
 ├── report.pdf
+├── Dockerfile
+├── docker-compose.yml
+├── renv.lock
 │
 ├── code/
 │   ├── README_code.md
 │   ├── preprocess.sh
 │   ├── data_wrangling.R
 │   ├── visualisations.R
-│   ├── .Rprofile
-│   ├── code.Rproj
-│   ├── renv.lock
-│   └── renv/
+│   └── code.Rproj
 │
 ├── raw/
 │   ├── DEMO_D.csv
@@ -74,8 +80,6 @@ ProjectRoot/
 │   │   └── index_vis.png*
 │   ├── shiny/
 │   │   ├── youngbites.R
-│   │   ├── renv.lock
-│   │   ├── renv/
 │   │   └── shiny.Rproj
 │   └── 
 └── 

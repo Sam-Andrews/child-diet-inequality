@@ -12,10 +12,11 @@ save_svg=false
 shiny_gui=false
 keep_fields=false
 
-# Function to display help via `./jobscript.sh -h`
+# Function to display help via `.docker-compose run --rm -p 3838:3838 -e FLAGS="-h" pipeline`
 
 show_help() {
-    echo "Usage: $0 [-h -v -s -p -d -g -i -a -A]"
+    echo ""
+    echo "Usage: docker-compose run --rm -p 3838:3838 -e FLAGS=[-h -v -s -p -d -g -i -a -A] pipeline"
     echo ""
     echo "For more information about these flags, please see 'code/README_code.md'."
     echo ""
@@ -40,7 +41,7 @@ show_help() {
 
 # Parse command line options
 
-# ...first, read in flags via docker-compose.yml file
+# ...first, read in the flags via docker-compose.yml file
 if [ -n "$FLAGS" ]; then
   set -- $FLAGS
 fi
@@ -77,18 +78,18 @@ done
 if $run_in_parallel; then
     if $skip_visualisations || $skip_shiny_app; then
         echo "Error: The -p flag cannot be used with -s or -v."
-        echo "Run './jobscript.sh -h' for more information."
+        echo "Run 'docker-compose run --rm -p 3838:3838 -e FLAGS="-h" pipeline' for more information."
         exit 1
     fi
 fi
 
 # Check for conflict: -g with -v
-# ...this would otherwise attempt to save SVGs of skipped visualisation script
+# ...this would otherwise attempt to save SVGs and PNGs of skipped visualisation script
 
 if $skip_visualisations; then
     if $save_svg; then
         echo "Error: The -g flag cannot be used with -v."
-        echo "Run './jobscript.sh -h' for more information."
+        echo "Run 'docker-compose run --rm -p 3838:3838 -e FLAGS="-h" pipeline' for more information."
         exit 1
     fi
 fi
@@ -99,7 +100,7 @@ fi
 if $skip_shiny_app; then
     if $shiny_gui; then
         echo "Error: The -i flag cannot be used with -s."
-        echo "Run './jobscript.sh -h' for more information."
+        echo "Run 'docker-compose run --rm -p 3838:3838 -e FLAGS="-h" pipeline' for more information."
         exit 1
     fi
 fi
