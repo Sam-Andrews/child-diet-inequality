@@ -2,12 +2,12 @@ version: '3.8'
 services:
   pipeline: 
     build:
-      context: .  # ...path to the directory containing Dockerfile (just `.`)
+      context: .  # ...set build context to the current directory, where the Dockerfile is located
     ports:
-      - "3838:3838" # ...force Shiny app to always run on port 3838
+      - "3838:3838" # ...map host port 3838 to container port 3838 for the Shiny app
     volumes:
-      - .:/pipeline # ...mount the current directory to the container (ensures output files are generated in the local directory)
-    init: true
+      - .:/pipeline # ...mount the current directory to '/pipeline' in the container for shared file access (otherwise output files will be lost)
+    init: true # ...enable init process to handle signal forwarding and reap zombie processes
     environment:
-      FLAGS: ""
-    command: bash -c './jobscript.sh && shiny-server'
+      FLAGS: "" # ...empty string so that the user can pass flags to the pipeline via the command line
+    command: bash -c './jobscript.sh && shiny-server' # ...execute 'jobscript.sh' and start the Shiny server
