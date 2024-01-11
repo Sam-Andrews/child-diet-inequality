@@ -39,6 +39,12 @@ suppressMessages({ # ...removes clutter in the terminal (doesn't hide errors)
   library(here) # ...for relative file path management
 })
 
+# Specify the application port
+
+options(shiny.host = "0.0.0.0")
+options(shiny.port = 3838)
+
+
 # Read command-line flags
 
 args <- commandArgs(trailingOnly = TRUE)
@@ -463,7 +469,8 @@ if("-i" %in% args) { # ...if -i flag is set, launch in IDE
   print("Press Ctrl + C // Cmd + C when finished")
   
   shinyApp(ui, server, options = list(
-    launch.browser = FALSE # ...try to prevent browser launch
+    launch.browser = FALSE, # ...try to prevent browser launch
+    port = 3838
   )) 
   
 } else { # ... if -i flag is not set, launch in browser

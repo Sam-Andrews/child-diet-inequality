@@ -1,0 +1,12 @@
+version: '3.8'
+services:
+  pipeline:  # Changed service name here
+    build:
+      context: .  # Path to the directory containing Dockerfile
+      # dockerfile: Dockerfile  # Uncomment this line if your Dockerfile has a different name
+    ports:
+      - "3838:3838"
+    volumes:
+      - .:/pipeline
+    init: true
+    command: ["./jobscript.sh"]
