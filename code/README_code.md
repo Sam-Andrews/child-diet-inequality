@@ -1,4 +1,15 @@
-# Purpose of this directory
+# Table of Contents
+- [Table of Contents](#table-of-contents)
+  - [Purpose of this directory](#purpose-of-this-directory)
+  - [Purpose of each script](#purpose-of-each-script)
+    - [Customisation](#customisation)
+  - [Understanding the commands](#understanding-the-commands)
+  - [Other files](#other-files)
+  - [Troubleshooting](#troubleshooting)
+  - [Computational environment](#computational-environment)
+
+
+## Purpose of this directory
 
 The `code/` directory contains all scripts required to run the pipeline, other than the job script (`jobscript.sh`) - which is kept in the project's root directory for ease-of-access - and the shiny app script (`youngbites.R`) in the `../visualisations/shiny` directory.
 
@@ -13,7 +24,7 @@ It is assumed that no script in this directory will be run individually, instead
 * `youngbites.R`: Generates the Shiny app ("Young Bites") from the cleaned data and attempts to open it in a browser. Note that this script is located in `../visualisations/shiny/`. This app allows the user to select variables to observe subgroup comparisons for both of these derived variable sets.
 
 
-## Customisation
+### Customisation
 
 This pipeline's scripts may be useful for similar research projects. To facilitate re-use value, several customisation options have been integrated, allowing the scripts to be tailored for different research requirements.
 
@@ -39,7 +50,7 @@ docker-compose run --rm -p 3838:3838 -e FLAGS="-v -a 6 -A 18" pipeline
 Note that if custom 'age' flags are set, the Shiny app will not allow the user to select the age variable. This is to ensure that inaccurate age groups are not displayed. If you would like to add in your own age groupings, you'll need to manually adjust the `data_wrangling.R` and `youngbites.R` scripts.
 
 
-### Understanding the commands
+## Understanding the commands
 
 The commands to run the pipeline, as outlined above, can be broken down as follows:
 
@@ -52,40 +63,47 @@ The commands to run the pipeline, as outlined above, can be broken down as follo
 
 ## Other files
 
-This pipeline contains a number of auxiliary files that are not directly called by the job script, but are otherwise important for reproducibility. These include:
-* `code.Rproj`: determines the 'starting point' for relative file path management in R Scripts. A similar file can also be seen in the `../visualisations/shiny` directory.
-* `../renv.lock`: Lists the dependencies and version numbers for specific R dependencies. This is used by the Dockerfile to configure the pipeline's environment.
-* `Dockerfile`: Used to configure the Docker image for this pipeline, ensuring reproducbility.
+This pipeline contains a number of auxiliary files that are not directly called upon by the job script, but are otherwise important for it to function properly. These include:
+* `code.Rproj`: determines the 'starting point' for relative file paths in R Scripts. A similar file can also be seen in the `../visualisations/shiny` directory.
+* `../renv.lock`: Lists the dependencies and version numbers for R and its dependencies. This is used by the Dockerfile.
+* `Dockerfile`: Configures the Docker image / computational environment for this pipeline.
 * `docker-compose.yml`: Establishes certain configurations required for the pipeline to function as intended. For example, it determines the local port for the Shiny app and ensures that output files are generated in the local directory, rather than Docker's own file system.
 
 
 ## Troubleshooting
 
-This section contains some additional methods for running the pipeline, should you encounter issues with the approach outlined in `../README.md`.
+This section contains some additional methods for running the pipeline should you encounter issues with the approach outlined in `../README.md`. For clarity, no issues were encountered during testing, though the below situations were deemed to be the most likely issues that could arise.
 
-*The Shiny app doesn't open*
+*"I can't pull the Docker image"*
 
-This is likely due to issues with the local port. This line should run the pipeline, though customisation options will be unavailable:
+This may occur if you are not logged in to Docker. Run `docker login` in the first instance, and check Docker Desktop (if installed) for any other issues.
 
-```
-docker-compose up pipeline
-```
+You may also wish to check the status of the Docker image on [Docker Hub](https://hub.docker.com/repository/docker/sammyosh/child-diet-inequality-image/general).
 
-*I can't pull the Docker image*
-
-If there are any issues pulling the Docker image, you may configure your own image. Make any required changes to the Dockerfile and then run:
+If you are still encountering issues pulling the Docker image, then you may wish to configure your own image. Make any required changes to the Dockerfile, if needed, and run:
 
 ```
 docker build -t pipeline .
 ```
 
-*I need to bypass Docker*
+*"I want to bypass Docker"*
 
-If you're still encountering issues with Docker and/or would prefer to bypass the service altogether, you may bypass the Docker, instead directly running the job script. 
+If you're still encountering issues with Docker and/or would prefer to bypass the service altogether, you may instead directly run the job script. 
 
-From the project root directory, simply run `./jobscript.sh` to execute the pipeline. Customisation flags may be added (e.g. `./jobscript.sh -v -a 6 -A 18`). 
+From the project root directory, simply run `./jobscript.sh` to execute the pipeline. Customisation flags may also be added (e.g. `./jobscript.sh -v -a 6 -A 18`). 
 
-You must ensure your local environment is aligned with the Docker image as much as possible, particularly for R and its dependencies. You can do this by closely adhering to the details covered in the 'Computational environment' section below.
+If running the job script directly, you should ensure your local environment is aligned with the Docker image as much as possible, particularly for R and its dependencies. You can do this by closely adhering to the computational environment specification (see below section).
+
+
+*"The Shiny app doesn't open, even though the script appears to run"*
+
+While the Shiny app is pending in the terminal, enter `http://localhost:3838/` into your browser. Note that terminating the pipeline will make the Shiny app unavailable locally.
+
+If the Shiny app still refuses to run, then there is likely an issue with the local port not being correctly mapped. Instead, try running the below line. This is a more 'controlled' version of the pipeline, and as such customisation options are not available:
+
+```
+docker-compose up pipeline
+```
 
 
 ## Computational environment

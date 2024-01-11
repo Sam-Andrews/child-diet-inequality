@@ -22,7 +22,7 @@ As this pipeline uses Docker for environment management, you do not need to inst
 
 ### Running the pipeline
 
-You'll first need to pull the pipeline's Docker image. In the command-line, run:
+You'll first need to pull the pipeline's Docker image. In the Bash command-line, run:
 
 ```
 docker pull sammyosh/child-diet-inequality-image:latest
