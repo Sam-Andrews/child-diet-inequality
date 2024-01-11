@@ -8,7 +8,7 @@ Its features include:
 * A static data visualisation for each variable set.
 * A `shiny` app, allowing users to select and compare variables, identifying vulnerable groups.
 
-For an overview of the pipeline's scripts and customisation options, see `code/README_code.md`.
+For an overview of the pipeline's scripts, customisation, and troubleshooting, see `code/README_code.md`.
 
 ## Getting started
 

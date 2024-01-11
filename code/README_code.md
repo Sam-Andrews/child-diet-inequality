@@ -6,6 +6,9 @@
   - [Understanding the commands](#understanding-the-commands)
   - [Other files](#other-files)
   - [Troubleshooting](#troubleshooting)
+    - [*"I can't pull the Docker image"*](#i-cant-pull-the-docker-image)
+    - [*"I want to bypass Docker"*](#i-want-to-bypass-docker)
+    - [*"The Shiny app doesn't open, even though the script appears to run"*](#the-shiny-app-doesnt-open-even-though-the-script-appears-to-run)
   - [Computational environment](#computational-environment)
 
 
@@ -74,7 +77,7 @@ This pipeline contains a number of auxiliary files that are not directly called 
 
 This section contains some additional methods for running the pipeline should you encounter issues with the approach outlined in `../README.md`. For clarity, no issues were encountered during testing, though the below situations were deemed to be the most likely issues that could arise.
 
-*"I can't pull the Docker image"*
+### *"I can't pull the Docker image"*
 
 This may occur if you are not logged in to Docker. Run `docker login` in the first instance, and check Docker Desktop (if installed) for any other issues.
 
@@ -86,7 +89,7 @@ If you are still encountering issues pulling the Docker image, then you may wish
 docker build -t pipeline .
 ```
 
-*"I want to bypass Docker"*
+### *"I want to bypass Docker"*
 
 If you're still encountering issues with Docker and/or would prefer to bypass the service altogether, you may instead directly run the job script. 
 
@@ -95,7 +98,7 @@ From the project root directory, simply run `./jobscript.sh` to execute the pipe
 If running the job script directly, you should ensure your local environment is aligned with the Docker image as much as possible, particularly for R and its dependencies. You can do this by closely adhering to the computational environment specification (see below section).
 
 
-*"The Shiny app doesn't open, even though the script appears to run"*
+### *"The Shiny app doesn't open, even though the script appears to run"*
 
 While the Shiny app is pending in the terminal, enter `http://localhost:3838/` into your browser. Note that terminating the pipeline will make the Shiny app unavailable locally.
 
@@ -113,3 +116,5 @@ The pipeline was developed and tested on a Windows 11 PC with WSL 2 (Ubuntu 22.0
 R scripts were developed using R version 4.1.2 (2021-11-01). This older version of R was used due to compatibility with R Studio Server for WSL, of which there is no later version. 
 
 For a detailed account of this pipeline's computational environment, please see the `Dockerfile` for the system-level environment, and `renv.lock` for the R-specific environment.
+
+[def]: #the-shiny-app-doesnt-open-even-though-the-script-appears-to-run
