@@ -37,7 +37,15 @@ show_help() {
         Ensure there's a space between '-A' and your chosen age"  # ...this is read by preprocess.sh
 }
 
+
 # Parse command line options
+
+# ...first, read in flags via docker-compose.yml file
+if [ -n "$FLAGS" ]; then
+  set -- $FLAGS
+fi
+
+# ...then, process flags via getopts loop
 
 while getopts "hvspaAgid" opt; do
     case "$opt" in

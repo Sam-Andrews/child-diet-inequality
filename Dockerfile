@@ -1,6 +1,4 @@
 # Base image: Ubuntu 22.04
-#with R version 4.1.2
-#FROM r-base:4.1.2  
 FROM ubuntu:22.04
 
 # Stop terminal from prompting user input during installation
@@ -55,5 +53,3 @@ ENTRYPOINT ["./jobscript.sh"]
 
 # CMD to start the Shiny Server 
 CMD ["shiny-server"]
-
-#docker run -v $(pwd):/pipeline pipeline -s

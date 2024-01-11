@@ -1,12 +1,13 @@
 version: '3.8'
 services:
-  pipeline:  # Changed service name here
+  pipeline: 
     build:
-      context: .  # Path to the directory containing Dockerfile
-      # dockerfile: Dockerfile  # Uncomment this line if your Dockerfile has a different name
+      context: .  # ...path to the directory containing Dockerfile (just `.`)
     ports:
-      - "3838:3838"
+      - "3838:3838" # ...force Shiny app to always run on port 3838
     volumes:
-      - .:/pipeline
+      - .:/pipeline # ...mount the current directory to the container (ensures output files are generated in the local directory)
     init: true
-    command: ["./jobscript.sh"]
+    environment:
+      FLAGS: ""
+    command: bash -c './jobscript.sh && shiny-server'
