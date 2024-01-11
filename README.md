@@ -28,13 +28,13 @@ You'll first need to pull the pipeline's Docker image. In the command-line, run:
 docker pull sammyosh/child-diet-inequality-image:latest
 ```
 
-Then, to execute the pipeline, run:
+Then, to build and execute the pipeline, run:
 
 ```
 docker-compose run --rm -p 3838:3838 pipeline
 ```
 
-Or, to see customisation options:
+Or, for customisation options:
 
 ```
 docker-compose run --rm -e FLAGS="-h" pipeline
@@ -44,13 +44,11 @@ For more information on this pipeline's customisation options, please see `code/
 
 ### Alterative approach
 
-Alternatively, you may instead run:
+After building the Docker image, the pipeline can be run (without customisation flags) through:
 
 ```
 docker-compose up pipeline
 ```
-
-Note that customisation flags are unavailable through this command.
 
 ### Compendium structure
 
@@ -65,6 +63,10 @@ ProjectRoot/
 ├── docker-compose.yml
 ├── renv.lock
 │
+├── clean/
+│   ├── clean_data.csv*
+│   └── variable_guide.md
+│
 ├── code/
 │   ├── README_code.md
 │   ├── preprocess.sh
@@ -75,10 +77,6 @@ ProjectRoot/
 ├── raw/
 │   ├── DEMO_D.csv
 │   └── FFQRAW_D.csv
-│
-├── clean/
-│   ├── clean_data.csv*
-│   └── variable_guide.md
 │
 ├── visualisations/
 │   ├── images/

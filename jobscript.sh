@@ -16,7 +16,7 @@ keep_fields=false
 
 show_help() {
     echo ""
-    echo "Usage: docker-compose run --rm -p 3838:3838 -e FLAGS=[-h -v -s -p -d -g -i -a -A] pipeline"
+    echo "Usage: docker-compose run --rm -p 3838:3838 -e FLAGS=\"[-h -v -s -p -d -g -i -a -A]\" pipeline"
     echo ""
     echo "For more information about these flags, please see 'code/README_code.md'."
     echo ""
@@ -78,7 +78,7 @@ done
 if $run_in_parallel; then
     if $skip_visualisations || $skip_shiny_app; then
         echo "Error: The -p flag cannot be used with -s or -v."
-        echo "Run 'docker-compose run --rm -p 3838:3838 -e FLAGS="-h" pipeline' for more information."
+        echo "Run 'docker-compose run --rm -p 3838:3838 -e FLAGS=\"-h\" pipeline' for more information."
         exit 1
     fi
 fi
@@ -89,7 +89,7 @@ fi
 if $skip_visualisations; then
     if $save_svg; then
         echo "Error: The -g flag cannot be used with -v."
-        echo "Run 'docker-compose run --rm -p 3838:3838 -e FLAGS="-h" pipeline' for more information."
+        echo "Run 'docker-compose run --rm -p 3838:3838 -e FLAGS=\"-h\" pipeline' for more information."
         exit 1
     fi
 fi
@@ -100,7 +100,7 @@ fi
 if $skip_shiny_app; then
     if $shiny_gui; then
         echo "Error: The -i flag cannot be used with -s."
-        echo "Run 'docker-compose run --rm -p 3838:3838 -e FLAGS="-h" pipeline' for more information."
+        echo "Run 'docker-compose run --rm -p 3838:3838 -e FLAGS=\"-h\" pipeline' for more information."
         exit 1
     fi
 fi
