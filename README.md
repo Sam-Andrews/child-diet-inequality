@@ -16,13 +16,19 @@ For an overview of the pipeline's scripts and customisation options, see `code/R
 
 Please ensure [Docker](https://docs.docker.com/engine/install/) is installed on your system.
 
-If using Windows, please also ensure you have [WSL 2 enabled](https://learn.microsoft.com/en-us/windows/wsl/install). 
+If using Windows, please [enable WSL 2](https://learn.microsoft.com/en-us/windows/wsl/install). 
 
-As this pipeline uses Docker for environment management, you do not need to install R or any specific dependencies to run this pipeline.
+As this pipeline uses Docker for environment management, you do not need to install R or any specific dependencies.
 
-## Running the pipeline
+### Running the pipeline
 
-To execute the full pipeline under its default settings, run:
+You'll first need to pull the pipeline's Docker image. In the command-line, run:
+
+```
+docker pull sammyosh/child-diet-inequality-image:latest
+```
+
+Then, to execute the pipeline, run:
 
 ```
 docker-compose run --rm -p 3838:3838 pipeline
@@ -38,7 +44,7 @@ For more information on this pipeline's customisation options, please see `code/
 
 ### Alterative approach
 
-If Docker fails to configure the pipeline correctly, please try running:
+Alternatively, you may instead run:
 
 ```
 docker-compose up pipeline
