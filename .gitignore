@@ -1,3 +1,8 @@
 .Rproj.user
 code/rsconnect
 .vscode
+
+# Building the Docker image may create the following unneeded `renv` directories.
+# ...these are not needed and can be safely ignored/deleted.
+renv/
+code/renv/
