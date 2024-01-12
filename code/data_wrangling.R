@@ -16,29 +16,6 @@
 
 # ----------------------------------------------------------------------------
 
-# Source activate.R as a failsafe (should it not automatically run)
-
-# ...the below might report that the script is "out of sync with the lock file". 
-#   This error can be ignored, as it is just an artifact of the failsafe.
-
-# ...define the path
-
-#sourcepath <- ("renv/activate.R")
-
-# ...check if activate.R exists and source it
-
-#if (file.exists(sourcepath)) {
-#  source(sourcepath)
-#} else {
-#  stop("activate.R file not found. Please ensure it exists at ", sourcepath)
-#}
-
-
-
-# Run libraries
-
-#renv::restore() # ...restore renv environment
-
 suppressMessages({ # ...removes clutter in the terminal (doesn't hide errors)
   library(here) # ...for relative path file management
   library(dplyr) # ...for data wrangling
